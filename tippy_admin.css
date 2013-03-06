@@ -1,0 +1,58 @@
+.wrap {
+	min-width: 600px;
+	max-width: 1200px;
+}
+
+.wrap h2 {
+	margin-bottom: 10px;
+}
+
+.tippyOptionSection {
+	margin: 0 5% 0 10px;
+
+	float: left;
+	width: 40%;
+	min-width: 275px;
+
+	padding-left: 15px;
+}
+
+.tippyHelpSection {
+	margin-left: 10px;
+	width: 100%;
+	min-width: 275px;
+	max-width: 700px;
+}
+
+.tippyOptionLabel {
+	font-size: 16px;
+	margin-top: 40px;
+	margin-bottom: 10px;
+}
+
+.tippyOptions {
+	margin: 0 0 20px 15px;
+}
+
+.tippyOptionLeft {
+	width: 125px;
+	float: left;
+}
+
+.tippyOptionRight {
+	float: left;
+}
+
+.clearOptions {
+	margin-bottom: 5px;
+	clear: both;
+}
+
+.tippyHeader {
+	margin-bottom: 5px;
+}
+
+.tippyHeader span {
+	font-weight: bold;
+	font-size: 1.25em;
+}

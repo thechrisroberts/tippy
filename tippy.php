@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 5.0.2
+Version: 5.1.0
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -36,7 +36,7 @@ class Tippy {
     private $sticky = 'false';
     private $showTitle = true;
     private $showClose = true;
-    private $closeLinkText = 'Close';
+    private $closeLinkText = 'X';
     private $delay = 700;
     private $fadeRate = 200;
     private $dragTips = true;
@@ -270,7 +270,7 @@ class Tippy {
             $this->sticky = sanitize_text_field($_POST['sticky']);
             $this->showTitle = isset($_POST['showTitle']) ? true : false;
             $this->showClose = isset($_POST['showClose']) ? "true" : "false";
-            $this->closeLinkText = isset($_POST['closeLinkText']) ? sanitize_text_field($_POST['closeLinkText']) : 'Close';
+            $this->closeLinkText = isset($_POST['closeLinkText']) ? sanitize_text_field($_POST['closeLinkText']) : 'X';
             $this->delay = isset($_POST['delay']) ? intval($_POST['delay']) : 900;
             $this->fadeRate = isset($_POST['faderate']) ? intval($_POST['faderate']) : 300;
             $this->dragTips = isset($_POST['dragTips']) ? "true" : "false";

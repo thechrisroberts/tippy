@@ -447,7 +447,7 @@ class Tippy {
                 $activateTippy = "onmouseup";
             }
             
-            $tippyObject = sprintf("title: '%s', text: '%s'", $tippyTitle, htmlentities($tippyText, ENT_QUOTES, 'UTF-8'));
+            $tippyObject = sprintf("title: '%s', text: '%s'", htmlentities($tippyTitle, ENT_QUOTES, 'UTF-8'), htmlentities($tippyText, ENT_QUOTES, 'UTF-8'));
             
             // Check the link target
             if (empty($tippyTarget) && $this->linkWindow == "new") {
@@ -466,7 +466,7 @@ class Tippy {
             
             // Should the link use the title attribute?
             if ($this->showTitle == 'true' && !empty($tippyTitle)) {
-                $tippyTitleAttribute = sprintf('title="%s" ', $tippyTitle);
+                $tippyTitleAttribute = sprintf('title="%s" ', htmlspecialchars($tippyTitle, ENT_COMPAT, 'UTF-8'));
             }
             
             // See if we have a swap title
@@ -476,7 +476,7 @@ class Tippy {
             
             // Check the header; allow a variety of possibilities
             if ($tippyHeader === true || $tippyHeader === "on" || $tippyHeader === "yes" || $tippyHeader === "true") {
-                $tippyObject .= sprintf(", header: '%s'", $tippyTitle);
+                $tippyObject .= sprintf(", header: '%s'", htmlentities($tippyTitle, ENT_QUOTES, 'UTF-8'));
                 
                 // Check the header link
                 if (!empty($tippyHeaderHref)) {
@@ -485,7 +485,7 @@ class Tippy {
                 
                 // Check the header text
                 if (!empty($tippyHeaderText)) {
-                    $tippyObject .= sprintf(", headerText: '%s'", $tippyHeaderText);
+                    $tippyObject .= sprintf(", headerText: '%s'", htmlentities($tippyHeaderText, ENT_QUOTES, 'UTF-8'));
                 }
             }
             

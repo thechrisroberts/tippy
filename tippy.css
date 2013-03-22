@@ -80,3 +80,7 @@
 .tippy_body p {
     margin-bottom: .75em;
 }
+
+.tippy_content_container {
+    display: none;
+}

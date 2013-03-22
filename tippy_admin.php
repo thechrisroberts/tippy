@@ -162,6 +162,14 @@ if (! function_exists('tippy_options_subpanel')) {
 						Only drag from the header
 					</label>
 			</div>
+
+			<div class="tippyHeader"><span>Experimental</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]Provides a much better method of adding your content to a Tippy tooltip. The new approach should permit a greater range of content to go inside a tooltip. If you have trouble getting certain content to display, turn this on and see if it works. Please report success or problems to <a href="mailto:columcille@gmail.com">Chris Roberts</a>.[/tippy]'); ?>)</div>
+			<div class="tippyOptions">
+	        	<input id="tippy_useDivContent" name="useDivContent" type="checkbox" value="true" <?php if ($tippy->getOption('useDivContent') === "true") echo "checked" ?> /> 
+					<label for="tippy_useDivContent">
+						Use new content method
+					</label>
+			</div>
 		</div>
 
 		<div style="clear: both;">&nbsp;</div>

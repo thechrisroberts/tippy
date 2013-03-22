@@ -13,6 +13,11 @@ function Tippy()
 {
 	// Initialize variables
 	
+	// Content holders
+	this.useDivContent = false;
+	this.contentTitle = '';
+	this.contentText = '';
+
 	// Title and swap
 	this.title = '';
 	this.swaptitle = '';
@@ -64,7 +69,7 @@ function Tippy()
 	
 	this.mouseoutSet = false;
 	
-	this.jQuery = jQuery.noConflict();
+	this.jQuery = $.noConflict();
 
 	// Initialize tooltip and settings
 	this.initialize = function(tipArgs)
@@ -79,6 +84,7 @@ function Tippy()
 		this.delay = this.defaultDelay = tipArgs.delay;
 		this.draggable = tipArgs.draggable;
 		this.dragheader = tipArgs.dragheader;
+		this.useDivContent = tipArgs.useDivContent;
 	};
 	
 	this.createTip = function()
@@ -298,6 +304,15 @@ function Tippy()
 		
 		this.tippyLinkId = tipArgs.id;
 		domTip_newTipId = this.tippyLinkId;
+
+		// Are we running experimental? Set title and text accordingly.
+		if (this.useDivContent) {
+			this.contentTitle = this.jQuery('#' + this.tippyLinkId + '_content span').html();
+			this.contentText = this.jQuery('#' + this.tippyLinkId + '_content div').html();
+		} else {
+			this.contentTitle = tipArgs.title;
+			this.contentText = tipArgs.text;
+		}
 		
 		// Did the user specify a swaptitle?
 		if (tipArgs.swaptitle !== undefined) {
@@ -411,8 +426,8 @@ function Tippy()
 			if (tipArgs.header !== undefined) {
 				if (typeof tipArgs.headerText === "string") {
 					domTip_headerText = tipArgs.headerText;
-				} else if (typeof tipArgs.title === "string") {
-					domTip_headerText = tipArgs.title;
+				} else if (this.contentTitle.length > 0) {
+					domTip_headerText = this.contentTitle;
 				} else if (this.jQuery("#" + this.tipId).attr('title') !== undefined) {
 					domTip_headerText = this.jQuery("#" + this.tipId).attr('title');
 				} else if (this.jQuery("#" + this.tipId).attr('tippyTitle') !== undefined) {
@@ -430,7 +445,7 @@ function Tippy()
 				domTip_headerLink = this.jQuery("#" + this.tipId).attr('href');
 			}
 			
-			this.populateTip(tipArgs.text, domTip_headerText, domTip_headerLink);		
+			this.populateTip(this.contentText, domTip_headerText, domTip_headerLink);		
 		} else {
 			this.freeze();
 		}

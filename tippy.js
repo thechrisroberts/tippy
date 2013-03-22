@@ -69,7 +69,7 @@ function Tippy()
 	
 	this.mouseoutSet = false;
 	
-	this.jQuery = $.noConflict();
+	this.jQuery = jQuery.noConflict();
 
 	// Initialize tooltip and settings
 	this.initialize = function(tipArgs)

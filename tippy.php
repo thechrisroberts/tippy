@@ -163,17 +163,16 @@ class Tippy {
 
     public function register_scripts()
     {
-        // wp_register_script('Tippy', plugins_url() .'/tippy/tippy.js', array('jquery'), '4.4.0');
-        wp_register_script('Tippy', plugins_url() .'/tippy/tippy.js');
+        wp_register_script('Tippy', plugins_url() .'/tippy/tippy.js', array('jquery'), '5.1.0');
     }
 
     public function load_scripts()
     {
         // Load jQuery, if not already present
-        // wp_enqueue_script('jquery');
-
+        wp_enqueue_script('jquery');
+        
         if ($this->dragTips) {
-            // wp_enqueue_script('jquery-ui-draggable');
+            wp_enqueue_script('jquery-ui-draggable');
         }
         
         // Load the Tippy script

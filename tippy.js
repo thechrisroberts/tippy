@@ -305,7 +305,7 @@ function Tippy()
 		this.tippyLinkId = tipArgs.id;
 		domTip_newTipId = this.tippyLinkId;
 
-		// Are we running experimental? Set title and text accordingly.
+		// Are we putting content in a hidden div? Set title and text accordingly.
 		if (this.useDivContent) {
 			this.contentTitle = this.jQuery('#' + this.tippyLinkId + '_content span').html();
 			this.contentText = this.jQuery('#' + this.tippyLinkId + '_content div').html();

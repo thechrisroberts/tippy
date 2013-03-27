@@ -306,7 +306,7 @@ function Tippy()
 		domTip_newTipId = this.tippyLinkId;
 
 		// Are we putting content in a hidden div? Set title and text accordingly.
-		if (this.useDivContent) {
+		if (this.jQuery('#' + this.tippyLinkId + '_content').length > 0) {
 			this.contentTitle = this.jQuery('#' + this.tippyLinkId + '_content span').html();
 			this.contentText = this.jQuery('#' + this.tippyLinkId + '_content div').html();
 		} else {

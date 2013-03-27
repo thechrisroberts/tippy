@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 5.1.0
+Version: 5.1.1
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -58,14 +58,23 @@ class Tippy {
         add_action('wp_head', array($this, 'initialize_tippy'));
         add_shortcode('tippy', array($this, 'shortcode'));
 
-        if ($this->getOption('useDivContent') === 'true') {
-            add_filter('the_content', array($this, 'insert_tippy_content'), 55);
-        }
+        add_filter('the_content', array($this, 'insert_tippy_content'), 55);
 
         // Admin tasks
         add_action('admin_menu', array($this, 'admin_menu'));
         add_action('admin_init', array($this, 'admin_init'));
         add_action('admin_action_tippy-options', array($this, 'admin_validate_options'));
+
+        add_filter('plugin_action_links', array($this, 'settings_link'), 10, 2);
+    }
+
+    public function settings_link($links, $file) { 
+        if ($file == 'tippy/tippy.php') {
+            $settings_link = '<a href="options-general.php?page=tippy.php">Settings</a>'; 
+            array_push($links, $settings_link);
+        }
+        
+        return $links; 
     }
 
     private function loadOptions()
@@ -211,6 +220,8 @@ class Tippy {
         } else {
             $tippyFadeRate = 0;
         }
+
+        $useDivContent = ($this->getOption('useDivContent') === true) ? "true" : "false";
         
         echo '
             <script type="text/javascript">
@@ -225,7 +236,7 @@ class Tippy {
                     delay: '. $this->getOption("delay") .',
                     draggable: '. $this->getOption("dragTips") .',
                     dragheader: '. $this->getOption("dragHeader") .',
-                    useDivContent: '. $this->getOption('useDivContent') .'
+                    useDivContent: '. $useDivContent .'
                 });
             </script>
 
@@ -387,6 +398,7 @@ class Tippy {
      * 'autoclose' => Optional string; by default, uses global setting; allows per-tooltip specification of autoclose.
      * 'class' => Optional string; specify an additional class for the tooltip link. Class gets passed on to the tooltip with _tip appended.
      * 'id' => Optional string; specifies id for the link. Gets passed on to the tooltip with _tip appended.
+     * 'name' => Optional string; specifies a name to set on the link.
      * 'item' => Optional string or int; used to automatically create unique identifiers for the tooltips.
      * 'height' => Optional int; manually specify tooltip height in pixels.
      * 'width' => Optional int; manually specify tooltip width in pixels.
@@ -422,6 +434,7 @@ class Tippy {
         $tippyDelay = isset($tippyArray['delay']) ? trim($tippyArray['delay']) : false;
         $tippyClass = isset($tippyArray['class']) ? trim($tippyArray['class']) : false;
         $tippyId = isset($tippyArray['id']) ? trim($tippyArray['id']) : false;
+        $tippyName = isset($tippyArray['name']) ? trim($tippyArray['name']) : false;
         $tippyItem = isset($tippyArray['item']) ? trim($tippyArray['item']) : false;
         $tippyHeight = isset($tippyArray['height']) ? $tippyArray['height'] : false;
         $tippyWidth = isset($tippyArray['width']) ? $tippyArray['width'] : false;
@@ -548,13 +561,17 @@ class Tippy {
                 $tippyLinkClass .= " ". $tippyClass;
                 $this->addTippyObjectValue("tippyclass", $tippyClass, "'%s'");
             }
+
+            if (!empty($tippyName)) {
+                $tippyLinkName = sprintf('name="%s"', $tippyName);
+            }
             
             // Check delay
             if (!empty($tippyDelay)) {
                 $this->addTippyObjectValue("delay", (int)$tippyDelay, "%d");
             }
             
-            $returnText = sprintf('<a id="%s" class="%s" %s %s %s %s="Tippy.loadTip({ %s, event: event });" %s>%s</a>', $tippyId, $tippyLinkClass, $tippyHref, $tippyTarget, $tippyTitleAttribute, $activateTippy, $this->tippyObject, $tippyMouseOut, $tippyLinkText);
+            $returnText = sprintf('<a %s id="%s" class="%s" %s %s %s %s="Tippy.loadTip({ %s, event: event });" %s>%s</a>', $tippyLinkName, $tippyId, $tippyLinkClass, $tippyHref, $tippyTarget, $tippyTitleAttribute, $activateTippy, $this->tippyObject, $tippyMouseOut, $tippyLinkText);
 
             // Clear the object
             $this->tippyObject = '';
@@ -578,7 +595,7 @@ class Tippy {
 
     public function addContent($contentTitle, $contentText, $contentId)
     {
-        $newContentDiv = '<div class="tippy_content_container" id="'. $contentId .'_content"><span class="tippy_title">'. $contentTitle .'</span><div class="tippy_content">'. $contentText .'</div></div>';
+        $newContentDiv = '<div class="tippy_content_container" id="'. $contentId .'_content"><span class="tippy_title">'. $contentTitle .'</span><div class="tippy_content">'. do_shortcode($contentText) .'</div></div>';
 
         $this->tippyContent[$contentId] = $newContentDiv;
     }

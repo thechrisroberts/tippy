@@ -394,6 +394,7 @@ class Tippy {
      * 'left' => Optional int; specifies left position in pixels.
      * 'bottom' => Optional int; specifies bottom position in pixels.
      * 'right' => Optional int; specifies right position in pixels.
+     * 'useDiv' => Optional bool; should we use the new method of inserting content?
      * ];
     */
     public function getLink($tippyArray)
@@ -427,6 +428,7 @@ class Tippy {
         $tippyOffsetX = isset($tippyArray['offsetx']) ? $tippyArray['offsetx'] : false;
         $tippyOffsetY = isset($tippyArray['offsety']) ? $tippyArray['offsety'] : false;
         $tippyImg = isset($tippyArray['img']) ? $tippyArray['img'] : false;
+        $tippyUseDiv = isset($tippyArray['useDiv']) ? $tippyArray['useDiv'] : false;
         
         $tippyLinkText = '';
         
@@ -462,7 +464,7 @@ class Tippy {
             $this->addTippyObjectValue("id", $tippyId, "'%s'");
 
             // See if we are using the experimental content method
-            if ($this->getOption('useDivContent') === 'true') {
+            if ($this->getOption('useDivContent') === 'true' || $tippyUseDiv === true) {
                 $this->addContent($tippyTitle, $tippyText, $tippyId);
             } else {
                 $this->addTippyObjectValue("title", htmlentities($tippyTitle, ENT_QUOTES, 'UTF-8'), "'%s'");

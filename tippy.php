@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 5.1.1
+Version: 5.1.2
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -416,6 +416,7 @@ class Tippy {
         $tippyMouseOut = '';
         $tippyTitleAttribute = '';
         $tippyLinkClass = 'tippy_link';
+        $tippyLinkName = '';
 
         // Specify default return value. Defaults to the text passed from Tippy.
         // A later check might swap this with the title.
@@ -595,7 +596,8 @@ class Tippy {
 
     public function addContent($contentTitle, $contentText, $contentId)
     {
-        $newContentDiv = '<div class="tippy_content_container" id="'. $contentId .'_content"><span class="tippy_title">'. $contentTitle .'</span><div class="tippy_content">'. do_shortcode($contentText) .'</div></div>';
+        // Inline styling from plugins is bad. Unless it isn't. Here, it isn't.
+        $newContentDiv = '<div style="display: none;" class="tippy_content_container" id="'. $contentId .'_content"><span class="tippy_title">'. $contentTitle .'</span><div class="tippy_content">'. do_shortcode($contentText) .'</div></div>';
 
         $this->tippyContent[$contentId] = $newContentDiv;
     }

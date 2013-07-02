@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 5.1.2
+Version: 5.2.0
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -32,6 +32,9 @@ class Tippy {
     private $tipPosition = 'link';
     private $tipOffsetX = 0;
     private $tipOffsetY = 10;
+    private $tipOffsetXUnit = 'px';
+    private $tipOffsetYUnit = 'px';
+    private $tipContainer = false;
     private $linkWindow = 'same';
     private $sticky = 'false';
     private $showTitle = true;
@@ -142,6 +145,9 @@ class Tippy {
                               'tipPosition' => $this->tipPosition,
                               'tipOffsetX' => $this->tipOffsetX,
                               'tipOffsetY' => $this->tipOffsetY,
+                              // 'tipOffsetXUnit' => $this->tipOffsetXUnit,
+                              // 'tipOffsetYUnit' => $this->tipOffsetYUnit,
+                              'tipContainer' => $this->tipContainer,
                               'linkWindow' => $this->linkWindow,
                               'sticky' => $this->sticky,
                               'showTitle' => $this->showTitle,
@@ -222,11 +228,13 @@ class Tippy {
         }
 
         $useDivContent = ($this->getOption('useDivContent') === true) ? "true" : "false";
+        $setContainer = ($this->getOption('tipContainer') === "") ? "false" : '"'. $this->getOption('tipContainer') .'"';
         
         echo '
             <script type="text/javascript">
                 Tippy.initialize({
                     tipPosition: "'. $this->getOption("tipPosition") .'",
+                    tipContainer: '. $setContainer .',
                     tipOffsetX: '. $this->getOption("tipOffsetX") .',
                     tipOffsetY: '. $this->getOption("tipOffsetY") .',
                     fadeRate: '. $tippyFadeRate .',
@@ -277,6 +285,9 @@ class Tippy {
             $this->tipPosition = sanitize_text_field($_POST['tipPosition']);
             $this->tipOffsetX = intval($_POST['tipOffsetX']);
             $this->tipOffsetY = intval($_POST['tipOffsetY']);
+            // $this->tipOffsetX = sanitize_text_field($_POST['tipOffsetXUnit']);
+            // $this->tipOffsetY = sanitize_text_field($_POST['tipOffsetYUnit']);
+            $this->tipContainer = isset($_POST['tipContainer']) ? sanitize_text_field($_POST['tipContainer']) : false;
             $this->linkWindow = sanitize_text_field($_POST['linkWindow']);
             $this->sticky = sanitize_text_field($_POST['sticky']);
             $this->showTitle = isset($_POST['showTitle']) ? true : false;
@@ -321,6 +332,9 @@ class Tippy {
                                           'width' => false,
                                           'offsetx' => false,
                                           'offsety' => false,
+                                          'position' => false,
+                                          'method' => false,
+                                          'container' => false,
                                           'img' => false), $attributes);
         
         if (!empty($tippyAtts['href'])) {
@@ -354,6 +368,9 @@ class Tippy {
                           'width' => $tippyAtts['width'],
                           'offsetx' => $tippyAtts['offsetx'],
                           'offsety' => $tippyAtts['offsety'],
+                          'position' => $tippyAtts['position'],
+                          'method' => $tippyAtts['method'],
+                          'container' => $tippyAtts['container'],
                           'img' => $tippyAtts['img']);
         
         $tippyLink = $this->getLink($tippyArr);
@@ -406,7 +423,10 @@ class Tippy {
      * 'left' => Optional int; specifies left position in pixels.
      * 'bottom' => Optional int; specifies bottom position in pixels.
      * 'right' => Optional int; specifies right position in pixels.
-     * 'useDiv' => Optional bool; should we use the new method of inserting content?
+     * 'position' => Optional string; specify position (link|mouse|absolute|fixed)
+     * 'method' => Option string; specify method to load content (embed|append)
+     * 'useDiv' => Optional bool; should we use the new method of inserting content? (deprecated)
+     * 'container' => Optional string; css selector which specifies which element should be the parent of the tooltip
      * ];
     */
     public function getLink($tippyArray)
@@ -441,6 +461,9 @@ class Tippy {
         $tippyWidth = isset($tippyArray['width']) ? $tippyArray['width'] : false;
         $tippyOffsetX = isset($tippyArray['offsetx']) ? $tippyArray['offsetx'] : false;
         $tippyOffsetY = isset($tippyArray['offsety']) ? $tippyArray['offsety'] : false;
+        $tippyPosition = isset($tippyArray['position']) ? $tippyArray['position'] : false;
+        $tippyMethod = isset($tippyArray['method']) ? $tippyArray['method'] : false;
+        $tippyContainer = isset($tippyArray['container']) ? $tippyArray['container'] : false;
         $tippyImg = isset($tippyArray['img']) ? $tippyArray['img'] : false;
         $tippyUseDiv = isset($tippyArray['useDiv']) ? $tippyArray['useDiv'] : false;
         
@@ -478,7 +501,7 @@ class Tippy {
             $this->addTippyObjectValue("id", $tippyId, "'%s'");
 
             // See if we are using the experimental content method
-            if ($this->getOption('useDivContent') === 'true' || $tippyUseDiv === true) {
+            if (($this->getOption('useDivContent') === 'true' || $tippyUseDiv === true) && (!$tippyMethod || $tippyMethod === "append")) {
                 $this->addContent($tippyTitle, $tippyText, $tippyId);
             } else {
                 $this->addTippyObjectValue("title", htmlentities($tippyTitle, ENT_QUOTES, 'UTF-8'), "'%s'");
@@ -556,6 +579,14 @@ class Tippy {
             if ($tippyOffsetY !== false) {
                 $this->addTippyObjectValue("offsety", (int)$tippyOffsetY, "%d");
             }
+
+            if ($tippyPosition !== false) {
+                $this->addTippyObjectValue("position", $tippyPosition, "'%s'");
+            }
+
+            if ($tippyContainer !== false) {
+                $this->addTippyObjectValue("container", $tippyContainer, "'%s'");
+            }
             
             // Check class/id
             if (!empty($tippyClass)) {
@@ -564,7 +595,7 @@ class Tippy {
             }
 
             if (!empty($tippyName)) {
-                $tippyLinkName = sprintf('name="%s"', $tippyName);
+                $tippyLinkName = 'name="'. $tippyName .'" ';
             }
             
             // Check delay
@@ -572,7 +603,7 @@ class Tippy {
                 $this->addTippyObjectValue("delay", (int)$tippyDelay, "%d");
             }
             
-            $returnText = sprintf('<a %s id="%s" class="%s" %s %s %s %s="Tippy.loadTip({ %s, event: event });" %s>%s</a>', $tippyLinkName, $tippyId, $tippyLinkClass, $tippyHref, $tippyTarget, $tippyTitleAttribute, $activateTippy, $this->tippyObject, $tippyMouseOut, $tippyLinkText);
+            $returnText = sprintf('<a '. $tippyLinkName .' id="%s" class="%s" %s %s %s %s="Tippy.loadTip({ %s, event: event });" %s>%s</a>', $tippyId, $tippyLinkClass, $tippyHref, $tippyTarget, $tippyTitleAttribute, $activateTippy, $this->tippyObject, $tippyMouseOut, $tippyLinkText);
 
             // Clear the object
             $this->tippyObject = '';
@@ -588,7 +619,7 @@ class Tippy {
         }
 
         if (!empty($valueType)) {
-            $this->tippyObject .= sprintf($valueName .": ". $valueType, $valueSetting);
+            $this->tippyObject .= sprintf($valueName .": $valueType", $valueSetting);
         } else {
             $this->tippyObject .= $valueName .": ". $valueSetting;
         }

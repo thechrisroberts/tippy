@@ -28,7 +28,7 @@ if (! function_exists('tippy_options_subpanel')) {
 		<input type="hidden" name="action" value="tippy-options" />
 
 		<div class="tippyOptionSection">
-	        <div class="tippyHeader"><span>Tooltip Trigger</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]Do you want the tooltip to automatically appear when a visitor hovers over the Tippy link, or should they have to click the link first?[/tippy]'); ?>)</div>
+	        <div class="tippyHeader"><span>Tooltip Trigger</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]Do you want the tooltip to automatically appear when a visitor hovers over the Tippy link, or should they have to click the link first?[/tippy]'); ?>)</div>
 	        <div class="tippyOptions">
 				<input id="tippy_openTip_hover" name="openTip"  type="radio" value="hover" <?php if ($tippy->getOption('openTip') == "hover") echo "checked" ?> />
 					<label for="tippy_openTip_hover">
@@ -41,7 +41,7 @@ if (! function_exists('tippy_options_subpanel')) {
 					</label>
 			</div>
 
-			<div class="tippyHeader"><span>Show/Hide</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]Should the tooltip use a fade in/fade out effect, or should it display and hide with no fade effect?[/tippy]'); ?>)</div>
+			<div class="tippyHeader"><span>Show/Hide</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]Should the tooltip use a fade in/fade out effect, or should it display and hide with no fade effect?[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 	        	<input id="tippy_fadeTip_fade" name="fadeTip"  type="radio" value="fade" <?php if ($tippy->getOption('fadeTip') == "fade") echo "checked" ?> />
 					<label for="tippy_fadeTip_fade">
@@ -54,7 +54,7 @@ if (! function_exists('tippy_options_subpanel')) {
 					</label>
 			</div>
 
-			<div class="tippyHeader"><span>Fade time</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]If you want to display a fade effect, how long should the fade effect last? A higher value means the tooltip will take longer to fade in/out.[/tippy]'); ?>)</div>
+			<div class="tippyHeader"><span>Fade time</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]If you want to display a fade effect, how long should the fade effect last? A higher value means the tooltip will take longer to fade in/out.[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 				<label for="tippy_faderate">
 					Fade rate: 
@@ -62,7 +62,7 @@ if (! function_exists('tippy_options_subpanel')) {
 				<input id="tippy_faderate" name="faderate" type="text" size="4" value="<?php echo $tippy->getOption('fadeRate'); ?>" /> (in milliseconds)
 			</div>
 
-			<div class="tippyHeader"><span>Close method</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]Should the tooltip automatically disappear when the visitor mouses away, or should visitors have to manually close the tooltip? (Note, you will need to be sure to specify "Show close links" if you set this to remain sticky.)[/tippy]'); ?>)</div>
+			<div class="tippyHeader"><span>Close method</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]Should the tooltip automatically disappear when the visitor mouses away, or should visitors have to manually close the tooltip? (Note, you will need to be sure to specify "Show close links" if you set this to remain sticky.)[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 				<input id="tippy_sticky_auto" name="sticky" type="radio" value="false" <?php if ($tippy->getOption('sticky') == "false") echo "checked" ?> />
 					<label for="tippy_sticky_auto">
@@ -75,7 +75,7 @@ if (! function_exists('tippy_options_subpanel')) {
 					</label>
 			</div>
 
-			<div class="tippyHeader"><span>Disappear Delay</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]If you selected for the tooltip to automatically close, how long should it wait before closing? This allows users to mouse away briefly without the tooltip closing right away. Set to 0 if you want it to immediately close.[/tippy]'); ?>)</div>
+			<div class="tippyHeader"><span>Disappear Delay</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]If you selected for the tooltip to automatically close, how long should it wait before closing? This allows users to mouse away briefly without the tooltip closing right away. Set to 0 if you want it to immediately close.[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 				<label for="tippy_delay">
 					Delay time: 
@@ -83,7 +83,7 @@ if (! function_exists('tippy_options_subpanel')) {
 				<input id="tippy_delay" name="delay" type="text" size="4" value="<?php echo $tippy->getOption('delay'); ?>" /> (in milliseconds; 0 for instant)
 			</div>
 
-			<div class="tippyHeader"><span>Close Link</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]Do you want to display a Close link so visitors can manually close the tooltip? If so, what should the Close link say?[/tippy]'); ?>)</div>
+			<div class="tippyHeader"><span>Close Link</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]Do you want to display a Close link so visitors can manually close the tooltip? If so, what should the Close link say?[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 				<input id="tippy_showClose" name="showClose" type="checkbox" value="true" <?php if ($tippy->getOption('showClose') == 'true') echo "checked" ?> /> 
 					<label for="tippy_showClose">
@@ -98,7 +98,7 @@ if (! function_exists('tippy_options_subpanel')) {
 		</div><!-- .tippyOptionSection -->
 
 		<div class="tippyOptionSection">		
-			<div class="tippyHeader"><span>Link Target</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]If you specify a url for your Tippy or Header link, should the url open in a new window or the same window?[/tippy]'); ?>)</div>
+			<div class="tippyHeader"><span>Link Target</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]If you specify a url for your Tippy or Header link, should the url open in a new window or the same window?[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 				<input id="tippy_linkWindow_same" name="linkWindow" type="radio" value="same" <?php if ($tippy->getOption('linkWindow') == "same") echo "checked" ?> />
 					<label for="tippy_linkWindow_same">
@@ -111,7 +111,7 @@ if (! function_exists('tippy_options_subpanel')) {
 					</label>
 			</div>
 			
-			<div class="tippyHeader"><span>Tooltip Location</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]Do you want the tooltip to appear relative to the Tippy link or relative to the mouse pointer?[/tippy]'); ?>)</div>
+			<div class="tippyHeader"><span>Tooltip Location</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]Decide where you want the tooltip to appear. If you specify absolute or fixed, you need to set the x/y offset below or set the offset per-tooltip.[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 				<input id="tippy_tipPosition_link" name="tipPosition" type="radio" value="link" <?php if ($tippy->getOption('tipPosition') == "link") echo "checked" ?> />
 					<label for="tippy_tipPosition_link">
@@ -121,28 +121,63 @@ if (! function_exists('tippy_options_subpanel')) {
 				<input id="tippy_tipPosition_mouse" name="tipPosition"  type="radio" value="mouse" <?php if ($tippy->getOption('tipPosition') == "mouse") echo "checked" ?> />
 					<label for="tippy_tipPosition_mouse">
 						Tooltip positioned under the mouse pointer
+					</label><br />
+
+				<input id="tippy_tipPosition_container" name="tipPosition"  type="radio" value="absolute" <?php if ($tippy->getOption('tipPosition') == "absolute") echo "checked" ?> />
+					<label for="tippy_tipPosition_container">
+						Tooltip absolute positioned to the containing element.
+					</label><br />
+
+				<input id="tippy_tipPosition_fixed" name="tipPosition"  type="radio" value="fixed" <?php if ($tippy->getOption('tipPosition') == "fixed") echo "checked" ?> />
+					<label for="tippy_tipPosition_fixed">
+						Tooltip in a fixed position.
 					</label>
 			</div>
+
+			<div class="tippyHeader"><span>Tooltip Container</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]By default, Tippy is located as a child of the body element. If you put a CSS selector here, Tippy will be moved inside that element. Might be useful if you switch position to absolute and set the new container to position: relative since Tippy\'s position will be determined by that element.[/tippy]'); ?>)</div>
+			<div class="tippyOptions">
+				<div style="display: inline-block; width: 100px;">
+					<label for="tippy_tipContainer">
+						Tippy container: 
+					</label>
+				</div>
+				<input id="tippy_tipContainer" name="tipContainer" size="10" type="text" value="<?php echo $tippy->getOption('tipContainer'); ?>" /> Leave empty for default
+			</div>
 			
-			<div class="tippyHeader"><span>Tooltip Offset</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]Specify X/Y offsets if you want to nudge the tooltip around - make it display farther away from its trigger position. Give it negative values to move it up or left, positive values for right or down.[/tippy]'); ?>)</div>
+			<div class="tippyHeader"><span>Tooltip Offset</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]Specify X/Y offsets if you want to nudge the tooltip around - make it display farther away from its trigger position. Give it negative values to move it up or left, positive values for right or down.[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 				<div style="display: inline-block; width: 100px;">
 					<label for="tippy_tipOffsetX">
 						Left/right offset
 					</label>
 				</div>
-				<input id="tippy_tipOffsetX" name="tipOffsetX" size="3" type="text" value="<?php echo $tippy->getOption('tipOffsetX'); ?>" />px<br />
+				<input id="tippy_tipOffsetX" name="tipOffsetX" size="3" type="text" value="<?php echo $tippy->getOption('tipOffsetX'); ?>" /> px
+				<?php /* Possibility later on
+				<select name="tipOffsetXUnit">
+					<option value="px" <?php if ($tippy->getOption('tipOffsetXUnit') == "px") { echo 'checked="checked"'; } ?>>px</option>
+					<option value="em" <?php if ($tippy->getOption('tipOffsetXUnit') == "em") { echo 'checked="checked"'; } ?>>em</option>
+					<option value="pct" <?php if ($tippy->getOption('tipOffsetXUnit') == "pct") { echo 'checked="checked"'; } ?>>pct</option>
+				</select>
+				*/ ?>
+				<br />
 				
 				<div style="display: inline-block; width: 100px;">
 					<label for="tippy_tipOffsetY">
 						Up/down offset
 					</label>
 				</div>
-				<input id="tippy_tipOffsetY" name="tipOffsetY" size="3" type="text" value="<?php echo $tippy->getOption('tipOffsetY'); ?>" />px
+				<input id="tippy_tipOffsetY" name="tipOffsetY" size="3" type="text" value="<?php echo $tippy->getOption('tipOffsetY'); ?>" /> px
+				<?php /* Possibility later on
+				<select name="tipOffsetYUnit">
+					<option value="px" <?php if ($tippy->getOption('tipOffsetYUnit') == "px") { echo 'checked="checked"'; } ?>>px</option>
+					<option value="em" <?php if ($tippy->getOption('tipOffsetYUnit') == "em") { echo 'checked="checked"'; } ?>>em</option>
+					<option value="pct" <?php if ($tippy->getOption('tipOffsetYUnit') == "pct") { echo 'checked="checked"'; } ?>>pct</option>
+				</select>
+				*/ ?>
 				
 			</div>
 			
-			<div class="tippyHeader"><span>Title Attribute</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]For SEO and Accessibility best practices, it is best to add a title attribute to link elements. Most browsers display the title as a miniature tooltip (for instance, a small yellow box under the pointer). This can get in the way of Tippy. Specify whether or not you want to include a title in your Tippy links.[/tippy]'); ?>)</div>
+			<div class="tippyHeader"><span>Title Attribute</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]For SEO and Accessibility best practices, it is best to add a title attribute to link elements. Most browsers display the title as a miniature tooltip (for instance, a small yellow box under the pointer). This can get in the way of Tippy. Specify whether or not you want to include a title in your Tippy links.[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 	        	<input id="tippy_showTitle" name="showTitle" type="checkbox" value="true" <?php if ($tippy->getOption('showTitle') == "true") echo "checked" ?> /> 
 					<label for="tippy_showTitle">
@@ -150,7 +185,7 @@ if (! function_exists('tippy_options_subpanel')) {
 					</label>
 			</div>
 
-			<div class="tippyHeader"><span>Draggable Tooltips</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]Uses jQuery UI. Allow users to drag tooltips around. Specify whether dragging should work from the header only or from any part of the tooltip.<br /><br />For best results, set the tooltip to sticky and limit dragging to the header.[/tippy]'); ?>)</div>
+			<div class="tippyHeader"><span>Draggable Tooltips</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]Uses jQuery UI. Allow users to drag tooltips around. Specify whether dragging should work from the header only or from any part of the tooltip.<br /><br />For best results, set the tooltip to sticky and limit dragging to the header.[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 	        	<input id="tippy_dragTips" name="dragTips" type="checkbox" value="true" <?php if ($tippy->getOption('dragTips') == "true") echo "checked" ?> /> 
 					<label for="tippy_dragTips">
@@ -163,7 +198,7 @@ if (! function_exists('tippy_options_subpanel')) {
 					</label>
 			</div>
 
-			<div class="tippyHeader"><span>Experimental</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" delay="900" offsetx="0" offsety="10" width="400"]Provides a much better method of adding your content to a Tippy tooltip. The new approach should permit a greater range of content to go inside a tooltip. If you have trouble getting certain content to display, turn this on and see if it works. Please report success or problems to <a href="mailto:columcille@gmail.com">Chris Roberts</a>.[/tippy]'); ?>)</div>
+			<div class="tippyHeader"><span>Experimental</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" method="embed" position="link" delay="900" offsetx="0" offsety="10" width="400"]Provides a much better method of adding your content to a Tippy tooltip. The new approach should permit a greater range of content to go inside a tooltip. If you have trouble getting certain content to display, turn this on and see if it works. Please report success or problems to <a href="mailto:columcille@gmail.com">Chris Roberts</a>.[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 	        	<input id="tippy_useDivContent" name="useDivContent" type="checkbox" value="true" <?php if ($tippy->getOption('useDivContent') === "true") echo "checked" ?> /> 
 					<label for="tippy_useDivContent">

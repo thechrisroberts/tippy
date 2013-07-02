@@ -4,7 +4,7 @@ Donate link: http://croberts.me/
 Tags: tooltip, popup
 Requires at least: 2.5
 Tested up to: 3.5.1
-Stable tag: 5.1.2
+Stable tag: 5.2.0
 
 Allows users to turn text into a tooltip or popup using a special [tippy] tag.
 
@@ -29,8 +29,15 @@ To use Tippy, just place Tippy tags wherever you want in your post. All of the a
 
 == Changelog ==
 
+= 5.2.0 =
+* Added new position options for absolute and fixed position.
+* Per-tooltip position attribute. Values: link, mouse, absolute, or fixed
+* Added new container option to specify a css selector which should be the parent of the tooltip
+* Per-tooltip container attribute, same purpose as new container option
+* Per-tooltip method attribute; specify embed or append to determine how content is added to the tooltip. Embed is the traditional way; append uses the new experimental (yet soon to be default) method.
+
 = 5.1.2 =
-= Additional tweaks for the experimental method
+* Additional tweaks for the experimental method
 
 = 5.1.1 =
 * Fixed some glitches with new experimental method

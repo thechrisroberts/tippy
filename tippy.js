@@ -46,6 +46,7 @@ function Tippy()
 	this.tipPosition = "mouse";
 	this.tipOffsetX = 0;
 	this.tipOffsetY = 0;
+	this.tipContainer = "body";
 	
 	// Do we fade in and out?
 	this.fadeRate = 0;
@@ -75,6 +76,7 @@ function Tippy()
 	this.initialize = function(tipArgs)
 	{
 		this.tipPosition = tipArgs.tipPosition;
+		this.tipContainer = tipArgs.tipContainer;
 		this.tipOffsetX = tipArgs.tipOffsetX;
 		this.tipOffsetY = tipArgs.tipOffsetY;
 		this.fadeRate = tipArgs.fadeRate;
@@ -93,12 +95,17 @@ function Tippy()
 		this.tipBox = this.jQuery('<div></div>')
 			.hide()
 			.css("display", "none")
-			.css("position", "absolute")
 			.css("height", "auto")
 			.addClass("domTip_Tip tippy_tip")
 			.attr("id", "domTip_tipBox")
 			.mouseover(function() { Tippy.freeze(); })
 			.appendTo('body');
+
+		if (this.tipPosition === "fixed") {
+			this.tipBox.css('position', 'fixed');
+		} else {
+			this.tipBox.css('position', 'absolute');
+		}
 
 		this.tipHeader = this.jQuery("<div></div>")
 			.css("height", "auto")
@@ -120,6 +127,11 @@ function Tippy()
 				this.tipBox.draggable();
 				this.tipBox.addClass("tippy_draggable");
 			}
+		}
+
+		if (this.tipContainer) {
+			var moveTip = this.tipBox.detach();
+			this.jQuery(this.tipContainer).append(moveTip);
 		}
 	};
 	
@@ -210,14 +222,20 @@ function Tippy()
 		 */
 		
 		var tipHorSide = "left", tipVertSide = "top";
-		
+		this.tipXloc = 0;
+		this.tipYloc = 0;
+
 		// this.tipXloc and this.tipYloc specify where the tooltip should appear.
 		// By default, it is just below and to the right of the mouse pointer.
-		if (this.tipPosition === "mouse") {
+		if (this.manPosition === "absolute") {
+			this.tipBox.css('position', 'absolute');
+		} else if (this.manPosition === "fixed") {
+			this.tipBox.css('position', 'fixed');
+		} else if (this.manPosition === "mouse" || (this.tipPosition === "mouse" && this.manPosition !== "link")) {
 			// Position below the mouse cursor
 			this.tipXloc = this.curPageX;
 			this.tipYloc = this.curPageY;
-		} else if (this.tipPosition === "link") {
+		} else if (this.manPosition === "link" || this.tipPosition === "link") {
 			// Position below the link
 			this.tipXloc = this.tipLinkX;
 			this.tipYloc = this.tipLinkY + this.tipLinkHeight;
@@ -372,6 +390,12 @@ function Tippy()
 			} else {
 				this.manOffsetY = undefined;
 			}
+
+			if (tipArgs.position !== undefined) {
+				this.manPosition = tipArgs.position;
+			} else {
+				this.manPosition = undefined;
+			}
 			
 			if (tipArgs.top !== undefined) {
 				this.top = tipArgs.top;
@@ -443,6 +467,20 @@ function Tippy()
 				domTip_headerLink = tipArgs.headerhref;
 			} else {
 				domTip_headerLink = this.jQuery("#" + this.tipId).attr('href');
+			}
+
+			if (tipArgs.container !== undefined) {
+				this.newContainer = tipArgs.container;
+
+				var moveTip = this.tipBox.detach();
+				this.jQuery(tipArgs.container).append(moveTip);
+			} else {
+				if (this.newContainer !== undefined) {
+					var moveTip = this.tipBox.detach();
+					this.jQuery(this.tipContainer).append(moveTip);
+
+					this.newContainer = undefined;
+				}
 			}
 			
 			this.populateTip(this.contentText, domTip_headerText, domTip_headerLink);		

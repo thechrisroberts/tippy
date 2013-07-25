@@ -13,6 +13,14 @@
     font-weight: normal;
     border-bottom: 1px dotted;
     cursor: pointer;
+    position: relative;
+    display: inline-block;
+}
+
+.tippy_link img {
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 .tippy_tip {

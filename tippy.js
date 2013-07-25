@@ -22,6 +22,10 @@ function Tippy()
 	this.title = '';
 	this.swaptitle = '';
 	this.isSwapped = false;
+
+	this.swapimg = '';
+	this.swapimgelement = new Object();
+	this.imgSwapped = new Object();
 	
 	// Fadeout delay. Set both default and delay to adjust for user changes.
 	this.defaultDelay = 900;
@@ -184,6 +188,7 @@ function Tippy()
 		this.tipBox.fadeOut(this.fadeRate, 'swing', function() { Tippy.finishFadeout(); });
 		
 		this.doSwapTitle(false);
+		this.doSwapImage(false);
 	}
 	
 	this.finishFadeout = function()
@@ -313,7 +318,39 @@ function Tippy()
 			this.title = '';
 		}
 	}
-	
+
+	this.doSwapImage = function(newSwap)
+	{
+		tippyToSwap = '#' + this.tippyLinkId;
+
+		if (!newSwap && this.imgSwapped[tippyToSwap]) {
+			this.imgSwapped[tippyToSwap] = false;
+
+			this.jQuery(tippyToSwap + ' img').fadeIn(250);
+			this.swapimgelement[tippyToSwap].fadeOut(250);
+		}
+		
+		if (this.swapimg !== '' && newSwap && !this.imgSwapped[tippyToSwap]) {
+			if (!(tippyToSwap in this.swapimgelement)) {
+				this.swapimgelement[tippyToSwap] = this.jQuery(tippyToSwap + ' img').clone();
+				this.swapimgelement[tippyToSwap].attr('src', this.swapimg);
+				this.swapimgelement[tippyToSwap].css('display', 'none');
+				this.swapimgelement[tippyToSwap].appendTo('#' + this.tippyLinkId);
+			}
+			
+			this.imgSwapped[tippyToSwap] = true;
+
+			this.jQuery(tippyToSwap + ' img').fadeOut(250);
+			this.swapimgelement[tippyToSwap].fadeIn(250);
+		}
+	}
+
+	this.swapImg = function(toSwap, newImg)
+	{
+		this.jQuery(toSwap).attr('src', newImg);
+		this.jQuery(toSwap).fadeIn('fast');
+	}
+
 	this.loadTip = function(tipArgs)
 	{
 		if (this.tipBox === "") {
@@ -338,8 +375,16 @@ function Tippy()
 		} else {
 			this.swaptitle = '';
 		}
+
+		// Did the user specify a swapimg?
+		if (tipArgs.swapimg !== undefined) {
+			this.swapimg = tipArgs.swapimg;
+		} else {
+			this.swapimg = '';
+		}
 		
 		this.doSwapTitle(true);
+		this.doSwapImage(true);
 		
 		// Check the delay
 		if (tipArgs.delay !== undefined) {
@@ -534,7 +579,6 @@ function Tippy()
 				headerHTML = '<a href="' + domTip_headerLink + '"' + headerTarget + '>' + domTip_headerText + '</a>';
 			}
 			
-			console.log(this.showClose);
 			if (this.showClose) {
 				headerClose = '<div class="domTip_tipCloseLink tippy_closelink" onClick="Tippy.fadeTippyFromClose();">' + this.closeText + '</div>';
 				
@@ -567,7 +611,7 @@ function Tippy()
 function domTip_toolText(domTip_newTipId, domTip_tipText, domTip_headerText, domTip_headerLink, domTip_tipWidth, domTip_tipHeight, domTip_tipElement, domTip_event)
 {
 	if (domTip_headerText !== "") {
-		this.jQuery("#" + domTip_tipElement).attr('tippyTitle', domTip_headerText);
+		jQuery("#" + domTip_tipElement).attr('tippyTitle', domTip_headerText);
 	}
 	
 	Tippy.loadTipInfo(domTip_tipText, domTip_tipWidth, domTip_tipHeight, domTip_tipElement, domTip_event);
@@ -578,3 +622,10 @@ function domTip_fadeTipOut()
 {
 	Tippy.fadeTippyOut();
 }
+
+jQuery(window).load(function() {
+	jQuery('.tippy_link:has(>img)').each(function() {
+		imgSize = jQuery('img', this).outerHeight();
+		jQuery(this).css('height', imgSize + 'px');
+	});
+});

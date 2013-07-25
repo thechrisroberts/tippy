@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 5.2.2
+Version: 5.3.0
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -340,7 +340,8 @@ class Tippy {
                                           'position' => false,
                                           'method' => false,
                                           'container' => false,
-                                          'img' => false), $attributes);
+                                          'img' => false,
+                                          'swapimg' => false), $attributes);
         
         if (!empty($tippyAtts['href'])) {
             $link = $tippyAtts['href'];
@@ -376,7 +377,8 @@ class Tippy {
                           'position' => $tippyAtts['position'],
                           'method' => $tippyAtts['method'],
                           'container' => $tippyAtts['container'],
-                          'img' => $tippyAtts['img']);
+                          'img' => $tippyAtts['img'],
+                          'swapimg' => $tippyAtts['swapimg']);
         
         $tippyLink = $this->getLink($tippyArr);
         
@@ -411,6 +413,7 @@ class Tippy {
      * 'title' => Optional string (either this or img must be set); should first be passed through tippy_format_title($title).
      * 'swaptitle' => Optional string; text to show when hovering over the Tippy link. Does not work with an image.
      * 'img' => Optional string (either this or title must be set); users may want Tippy to trigger on an image rather than text. This should be the full address to the image.
+     * 'swapimg' => Optional string similar to swaptitle, display an alternate img on hover. Only used if img is also set.
      * 'text' => Required string; should first be passed through tippy_format_text(do_shortcode($text)).
      * 'href' => Optional string; contains link href for the Tippy link, if desired.
      * 'target' => Optional string; contains the link target, usually either _self or _blank. Overrides global setting.
@@ -470,6 +473,7 @@ class Tippy {
         $tippyMethod = isset($tippyArray['method']) ? $tippyArray['method'] : false;
         $tippyContainer = isset($tippyArray['container']) ? $tippyArray['container'] : false;
         $tippyImg = isset($tippyArray['img']) ? $tippyArray['img'] : false;
+        $tippySwapImg = isset($tippyArray['swapimg']) ? $tippyArray['swapimg'] : false;
         $tippyUseDiv = isset($tippyArray['useDiv']) ? $tippyArray['useDiv'] : false;
         
         $tippyLinkText = '';
@@ -549,6 +553,11 @@ class Tippy {
             // See if we have a swap title
             if (!empty($tippySwapTitle)) {
                 $this->addTippyObjectValue("swaptitle", $tippySwapTitle, "'%s'");
+            }
+
+            // See if we have a swap image
+            if (!empty($tippySwapImg)) {
+                $this->addTippyObjectValue("swapimg", $tippySwapImg, "'%s'");
             }
             
             // Check the header; allow a variety of possibilities

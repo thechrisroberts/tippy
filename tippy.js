@@ -378,6 +378,20 @@ function Tippy()
 			// Update location info
 			this.setPositions(this.tippyLinkId, tipArgs.event);
 			
+			if (tipArgs.container !== undefined) {
+				this.newContainer = tipArgs.container;
+
+				var moveTip = this.tipBox.detach();
+				this.jQuery(tipArgs.container).append(moveTip);
+			} else {
+				if (this.newContainer !== undefined) {
+					var moveTip = this.tipBox.detach();
+					this.jQuery(this.tipContainer).append(moveTip);
+
+					this.newContainer = undefined;
+				}
+			}
+
 			// See if we need to do any manual offsets
 			if (tipArgs.offsetx !== undefined) {
 				this.manOffsetX = tipArgs.offsetx;
@@ -468,20 +482,6 @@ function Tippy()
 			} else {
 				domTip_headerLink = this.jQuery("#" + this.tipId).attr('href');
 			}
-
-			if (tipArgs.container !== undefined) {
-				this.newContainer = tipArgs.container;
-
-				var moveTip = this.tipBox.detach();
-				this.jQuery(tipArgs.container).append(moveTip);
-			} else {
-				if (this.newContainer !== undefined) {
-					var moveTip = this.tipBox.detach();
-					this.jQuery(this.tipContainer).append(moveTip);
-
-					this.newContainer = undefined;
-				}
-			}
 			
 			this.populateTip(this.contentText, domTip_headerText, domTip_headerLink);		
 		} else {
@@ -534,6 +534,7 @@ function Tippy()
 				headerHTML = '<a href="' + domTip_headerLink + '"' + headerTarget + '>' + domTip_headerText + '</a>';
 			}
 			
+			console.log(this.showClose);
 			if (this.showClose) {
 				headerClose = '<div class="domTip_tipCloseLink tippy_closelink" onClick="Tippy.fadeTippyFromClose();">' + this.closeText + '</div>';
 				

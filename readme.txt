@@ -4,7 +4,7 @@ Donate link: http://croberts.me/
 Tags: tooltip, popup
 Requires at least: 2.5
 Tested up to: 3.5.1
-Stable tag: 5.2.0
+Stable tag: 5.2.2
 
 Allows users to turn text into a tooltip or popup using a special [tippy] tag.
 
@@ -28,6 +28,12 @@ To use Tippy, just place Tippy tags wherever you want in your post. All of the a
 1. Tippy in action!
 
 == Changelog ==
+
+= 5.2.2 = 
+* Fixed a bug which prevented Tippy from passing in default settings
+
+= 5.2.1 =
+* Fix for default container
 
 = 5.2.0 =
 * Added new position options for absolute and fixed position.

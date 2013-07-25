@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 5.2.0
+Version: 5.2.2
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -228,7 +228,12 @@ class Tippy {
         }
 
         $useDivContent = ($this->getOption('useDivContent') === true) ? "true" : "false";
-        $setContainer = ($this->getOption('tipContainer') === "") ? "false" : '"'. $this->getOption('tipContainer') .'"';
+        
+        if (!$this->getOption('tipContainer') || $this->getOption('tipContainer') == "") {
+            $setContainer = '"body"';
+        } else {
+            $setContainer = '"'. $this->getOption('tipContainer') .'"';
+        }
         
         echo '
             <script type="text/javascript">
@@ -532,7 +537,6 @@ class Tippy {
             if ($tippyAutoclose !== 'false' && ($this->sticky == 'false' || $tippyAutoclose == 'true')) {
                 $tippyMouseOut = 'onmouseout="Tippy.fadeTippyOut();"';
                 $this->addTippyObjectValue("sticky", "false");
-
             } else {
                 $this->addTippyObjectValue("sticky", "true");
             }

@@ -17,10 +17,15 @@
     display: inline-block;
 }
 
-.tippy_link img {
+img {
+    z-index: 1;
+}
+
+img.tippy_swap {
     position: absolute;
     top: 0;
     left: 0;
+    z-index: 5;
 }
 
 .tippy_tip {

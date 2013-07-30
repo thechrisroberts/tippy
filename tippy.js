@@ -326,13 +326,13 @@ function Tippy()
 		if (!newSwap && this.imgSwapped[tippyToSwap]) {
 			this.imgSwapped[tippyToSwap] = false;
 
-			this.jQuery(tippyToSwap + ' img').fadeIn(250);
 			this.swapimgelement[tippyToSwap].fadeOut(250);
 		}
 		
 		if (this.swapimg !== '' && newSwap && !this.imgSwapped[tippyToSwap]) {
 			if (!(tippyToSwap in this.swapimgelement)) {
 				this.swapimgelement[tippyToSwap] = this.jQuery(tippyToSwap + ' img').clone();
+				this.swapimgelement[tippyToSwap].addClass('tippy_swap');
 				this.swapimgelement[tippyToSwap].attr('src', this.swapimg);
 				this.swapimgelement[tippyToSwap].css('display', 'none');
 				this.swapimgelement[tippyToSwap].appendTo('#' + this.tippyLinkId);
@@ -340,7 +340,6 @@ function Tippy()
 			
 			this.imgSwapped[tippyToSwap] = true;
 
-			this.jQuery(tippyToSwap + ' img').fadeOut(250);
 			this.swapimgelement[tippyToSwap].fadeIn(250);
 		}
 	}
@@ -622,10 +621,3 @@ function domTip_fadeTipOut()
 {
 	Tippy.fadeTippyOut();
 }
-
-jQuery(window).load(function() {
-	jQuery('.tippy_link:has(>img)').each(function() {
-		imgSize = jQuery('img', this).outerHeight();
-		jQuery(this).css('height', imgSize + 'px');
-	});
-});

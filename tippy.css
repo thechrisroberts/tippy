@@ -17,11 +17,11 @@
     display: inline-block;
 }
 
-img {
+.tippy_link img {
     z-index: 1;
 }
 
-img.tippy_swap {
+.tippy_link img.tippy_swap {
     position: absolute;
     top: 0;
     left: 0;

@@ -4,7 +4,7 @@ Donate link: http://croberts.me/
 Tags: tooltip, popup
 Requires at least: 2.5
 Tested up to: 3.5.1
-Stable tag: 5.3.2
+Stable tag: 6.0.0
 
 Allows users to turn text into a tooltip or popup using a special [tippy] tag.
 

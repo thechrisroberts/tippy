@@ -1,6 +1,6 @@
 /*
  * jQuery Tippy
- * Version 1.1
+ * Version 1.2.0
  * By Chris Roberts, chris@dailycross.net
  * http://croberts.me/
  *

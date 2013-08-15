@@ -44,7 +44,6 @@ class Tippy {
     private $fadeRate = 200;
     private $dragTips = true;
     private $dragHeader = true;
-    private $useDivContent = false;
 
     private $optionsLoaded = false;
     private $countTips = 0;
@@ -52,6 +51,43 @@ class Tippy {
     private $tippyContent = array();
 
     private $tippyObject = '';
+
+    // List all options possible for Tippy. Used to verify valid attributes
+    // in the shortcode.
+    private $tippyOptionNames = array(
+                                    'multitip', 
+                                    'autoshow', 
+                                    'showtitle', 
+                                    'hoverpopup', 
+                                    'showdelay', 
+                                    'showspeed', 
+                                    'hidespeed', 
+                                    'autoclose', 
+                                    'hidedelay', 
+                                    'container', 
+                                    'position', 
+                                    'top', 
+                                    'bottom', 
+                                    'left', 
+                                    'right', 
+                                    'offsetx', 
+                                    'offsety', 
+                                    'width', 
+                                    'height', 
+                                    'draggable', 
+                                    'dragheader', 
+                                    'anchor', 
+                                    'title', 
+                                    'swaptitle', 
+                                    'img', 
+                                    'swapimg', 
+                                    'href', 
+                                    'target', 
+                                    'showheader', 
+                                    'headertitle', 
+                                    'headerhref', 
+                                    'showclose', 
+                                    'closetext');
 
     // Initialize everything
     public function __construct()
@@ -156,8 +192,7 @@ class Tippy {
                               'delay' => $this->delay,
                               'fadeRate' => $this->fadeRate,
                               'dragTips' => $this->dragTips,
-                              'dragHeader' => $this->dragHeader,
-                              'useDivContent' => $this->useDivContent);
+                              'dragHeader' => $this->dragHeader);
 
         return update_option('tippy_options', $optionsArray);
     }
@@ -178,7 +213,7 @@ class Tippy {
 
     public function register_scripts()
     {
-        wp_register_script('Tippy', plugins_url() .'/tippy/tippy.js', array('jquery'), '5.1.0');
+        wp_register_script('Tippy', plugins_url() .'/tippy/jquery.tippy.js', array('jquery'), '6.0.0');
     }
 
     public function load_scripts()
@@ -197,12 +232,13 @@ class Tippy {
 
     public function register_styles()
     {
-        // Load the Tippy css. Checks for several possibilities with the css file. Most of these are
-        // outdated options, but people might still be using them, so check for them.
-        $tippyCSS_locations = array(get_stylesheet_directory() .'/tippy.css' => get_bloginfo('stylesheet_directory') .'/tippy.css',
+        // Load the Tippy css. Checks for several possibilities with the css file.
+        // Includes checks for deprecated names.
+        $tippyCSS_locations = array(get_stylesheet_directory() .'/jquery.tippy.css' => get_bloginfo('stylesheet_directory') .'/jquery.tippy.css',
+                                    get_stylesheet_directory() .'/tippy.css' => get_bloginfo('stylesheet_directory') .'/tippy.css',
                                     get_stylesheet_directory() .'/dom_tooltip.css' => get_bloginfo('stylesheet_directory') .'/dom_tooltip.css',
                                     get_stylesheet_directory() .'/dom_tooltip.factory.css' => get_bloginfo('stylesheet_directory') .'/dom_tooltip.factory.css',
-                                    WP_PLUGIN_DIR .'/tippy/tippy.css' => plugins_url() .'/tippy/tippy.css');
+                                    WP_PLUGIN_DIR .'/tippy/jquery.tippy.css' => plugins_url() .'/tippy/jquery.tippy.css');
 
         foreach ($tippyCSS_locations as $tippyPath => $tippyCSS) {
             if (file_exists($tippyPath)) {
@@ -227,8 +263,6 @@ class Tippy {
             $tippyFadeRate = 0;
         }
 
-        $useDivContent = ($this->getOption('useDivContent') === true) ? "true" : "false";
-        
         if (!$this->getOption('tipContainer') || $this->getOption('tipContainer') == "") {
             $setContainer = '"body"';
         } else {
@@ -237,6 +271,11 @@ class Tippy {
         
         echo '
             <script type="text/javascript">
+                jQuery(\'document\').ready(function() {
+                    jQuery(\'.tippy\').tippy();
+                });
+                
+                /*
                 Tippy.initialize({
                     tipPosition: "'. $this->getOption("tipPosition") .'",
                     tipContainer: '. $setContainer .',
@@ -248,9 +287,9 @@ class Tippy {
                     closeText: "'. $this->getOption("closeLinkText") .'",
                     delay: '. $this->getOption("delay") .',
                     draggable: '. $this->getOption("dragTips") .',
-                    dragheader: '. $this->getOption("dragHeader") .',
-                    useDivContent: '. $useDivContent .'
+                    dragheader: '. $this->getOption("dragHeader") .'
                 });
+                */
             </script>
 
         ';
@@ -302,7 +341,6 @@ class Tippy {
             $this->fadeRate = isset($_POST['faderate']) ? intval($_POST['faderate']) : 300;
             $this->dragTips = isset($_POST['dragTips']) ? "true" : "false";
             $this->dragHeader = isset($_POST['dragHeader']) ? "true" : "false";
-            $this->useDivContent = isset($_POST['useDivContent']) ? "true" : "false";
 
             $this->saveOptions();
 
@@ -319,331 +357,48 @@ class Tippy {
     // Pull data out of the shortcode and pass it to format link
     public function shortcode($attributes, $text = '')
     {
-        $link = "";
-        
-        $tippyAtts = shortcode_atts(array('title' => '',
-                                          'swaptitle' => '',
-                                          'reference' => false, 
-                                          'href' => false, 
-                                          'target' => false,
-                                          'header' => 'on', 
-                                          'headerhref' => false,
-                                          'headertext' => false,
-                                          'autoclose' => true,
-                                          'delay' => false,
-                                          'class' => false, 
-                                          'id' => false, 
-                                          'height' => false, 
-                                          'width' => false,
-                                          'offsetx' => false,
-                                          'offsety' => false,
-                                          'position' => false,
-                                          'method' => false,
-                                          'container' => false,
-                                          'img' => false,
-                                          'swapimg' => false), $attributes);
-        
-        if (!empty($tippyAtts['href'])) {
-            $link = $tippyAtts['href'];
-        } else if (!empty($tippyAtts['reference'])) {
-            $link = $tippyAtts['reference'];
-        }
-        
-        if ($this->getOption('useDivContent') === 'true') {
-            $sendTitle = $tippyAtts['title'];
-            $sendText = $text;
+        // Set an id after checking if one is in the attributes
+        if (empty($attributes['id'])) {
+            $tippyId = 'tippy_tip'. $tippyItem .'_'. rand(100, 9999);
         } else {
-            $sendTitle = $this->format_title($tippyAtts['title']);
-            $sendText = $this->format_text(do_shortcode($text));
+            $tippyId = $attributes['id'];
+
+            // We no longer need nor want this in the attributes list
+            unset($attributes['id']);
         }
 
-        $tippyArr = array('title' => $sendTitle,
-                          'swaptitle' => $this->format_title($tippyAtts['swaptitle']),
-                          'text' => $sendText,
-                          'href' => $link,
-                          'target' => $tippyAtts['target'],
-                          'header' => $tippyAtts['header'],
-                          'headerhref' => $tippyAtts['headerhref'],
-                          'headertext' => $this->format_title($tippyAtts['headertext']),
-                          'autoclose' => $tippyAtts['autoclose'],
-                          'delay' => $tippyAtts['delay'],
-                          'class' => $tippyAtts['class'],
-                          'id' => $tippyAtts['id'], 
-                          'item' => $this->countTips,
-                          'height' => $tippyAtts['height'],
-                          'width' => $tippyAtts['width'],
-                          'offsetx' => $tippyAtts['offsetx'],
-                          'offsety' => $tippyAtts['offsety'],
-                          'position' => $tippyAtts['position'],
-                          'method' => $tippyAtts['method'],
-                          'container' => $tippyAtts['container'],
-                          'img' => $tippyAtts['img'],
-                          'swapimg' => $tippyAtts['swapimg']);
-        
-        $tippyLink = $this->getLink($tippyArr);
+        // Loop through $attributes and make sure they are in $this->tippyOptionNames
+        // then add them to our data set
+        foreach ($attributes as $attName => $attValue) {
+            if (in_array($attName, $this->tippyOptionNames)) {
+                $this->addAttribute($attName, $attValue, $tippyId);
+            }
+        }
+
+        $this->addContent($text, $tippyId);
         
         $this->countTips++;
         
         return $tippyLink;
     }
 
-    public function format_title($tippy_title)
+    private function addAttribute($attributeName, $attributeValue, $contentId)
     {
-        $tippy_title = str_replace("\\", "\\\\", $tippy_title);
-        $tippy_title = str_replace("'", "&#8217;", $tippy_title);
-        
-        return $tippy_title;
+        $this->tippyAttributes[$contentId][$attributeName] = $attributeValue;
     }
 
-    public function format_text($tippy_text)
+    private function addContent($contentText, $contentId)
     {
-        // Just need to replace a few items so do it manually rather than using a function like htmlentities()
-        $tippy_text = str_replace("\n", "", $tippy_text);
-        $tippy_text = str_replace("\r", "", $tippy_text);
-        $tippy_text = str_replace("'", "&#8217;", $tippy_text);
-        $tippy_text = str_replace("\\", "&#92;", $tippy_text);
-        $tippy_text = str_replace("(", "&#40;", $tippy_text);
-        $tippy_text = str_replace(")", "&#41;", $tippy_text);
-
-        return $tippy_text;
-    }
-
-    // Receive necessary data and shape it into a Tippy link
-    /* $tippyArray[
-     * 'title' => Optional string (either this or img must be set); should first be passed through tippy_format_title($title).
-     * 'swaptitle' => Optional string; text to show when hovering over the Tippy link. Does not work with an image.
-     * 'img' => Optional string (either this or title must be set); users may want Tippy to trigger on an image rather than text. This should be the full address to the image.
-     * 'swapimg' => Optional string similar to swaptitle, display an alternate img on hover. Only used if img is also set.
-     * 'text' => Required string; should first be passed through tippy_format_text(do_shortcode($text)).
-     * 'href' => Optional string; contains link href for the Tippy link, if desired.
-     * 'target' => Optional string; contains the link target, usually either _self or _blank. Overrides global setting.
-     * 'header' => Optional string (on/off); specifies if the header is on or off.
-     * 'headerhref' => Optional string; by default, header link uses the href value; this overrides the link used in the header.
-     * 'headertext' => Optional string; by default, the header displays the title value; this specifies the text to show in the header.
-     * 'autoclose' => Optional string; by default, uses global setting; allows per-tooltip specification of autoclose.
-     * 'class' => Optional string; specify an additional class for the tooltip link. Class gets passed on to the tooltip with _tip appended.
-     * 'id' => Optional string; specifies id for the link. Gets passed on to the tooltip with _tip appended.
-     * 'name' => Optional string; specifies a name to set on the link.
-     * 'item' => Optional string or int; used to automatically create unique identifiers for the tooltips.
-     * 'height' => Optional int; manually specify tooltip height in pixels.
-     * 'width' => Optional int; manually specify tooltip width in pixels.
-     * 'top' => Optional int; specifies top position in pixels.
-     * 'left' => Optional int; specifies left position in pixels.
-     * 'bottom' => Optional int; specifies bottom position in pixels.
-     * 'right' => Optional int; specifies right position in pixels.
-     * 'position' => Optional string; specify position (link|mouse|absolute|fixed)
-     * 'method' => Option string; specify method to load content (embed|append)
-     * 'useDiv' => Optional bool; should we use the new method of inserting content? (deprecated)
-     * 'container' => Optional string; css selector which specifies which element should be the parent of the tooltip
-     * ];
-    */
-    public function getLink($tippyArray)
-    {
-        // Initialize values that might default empty
-        $tippyTarget = '';
-        $tippyMouseOut = '';
-        $tippyTitleAttribute = '';
-        $tippyLinkClass = 'tippy_link';
-        $tippyLinkName = '';
-
-        // Specify default return value. Defaults to the text passed from Tippy.
-        // A later check might swap this with the title.
-        $returnText = $tippyArray['text'];
+        // Put the attributes together
+        $tooltipAttributes = '';
         
-        // Make sure array values are clean
-        $tippyTitle = isset($tippyArray['title']) ? trim($tippyArray['title']) : '';
-        $tippySwapTitle = isset($tippyArray['swaptitle']) ? trim($tippyArray['swaptitle']) : '';
-        $tippyText = isset($tippyArray['text']) ? trim($tippyArray['text']) : '';
-        $tippyHref = isset($tippyArray['href']) ? trim($tippyArray['href']) : false;
-        $tippyTarget = isset($tippyArray['target']) ? trim($tippyArray['target']) : '';
-        $tippyHeader = isset($tippyArray['header']) ? strtolower(trim($tippyArray['header'])) : false;
-        $tippyHeaderHref = isset($tippyArray['headerhref']) ? trim($tippyArray['headerhref']) : false;
-        $tippyHeaderText = isset($tippyArray['headertext']) ? trim($tippyArray['headertext']) : false;
-        $tippyAutoclose = isset($tippyArray['autoclose']) ? trim($tippyArray['autoclose']) : false;
-        $tippyDelay = isset($tippyArray['delay']) ? trim($tippyArray['delay']) : false;
-        $tippyClass = isset($tippyArray['class']) ? trim($tippyArray['class']) : false;
-        $tippyId = isset($tippyArray['id']) ? trim($tippyArray['id']) : false;
-        $tippyName = isset($tippyArray['name']) ? trim($tippyArray['name']) : false;
-        $tippyItem = isset($tippyArray['item']) ? trim($tippyArray['item']) : false;
-        $tippyHeight = isset($tippyArray['height']) ? $tippyArray['height'] : false;
-        $tippyWidth = isset($tippyArray['width']) ? $tippyArray['width'] : false;
-        $tippyOffsetX = isset($tippyArray['offsetx']) ? $tippyArray['offsetx'] : false;
-        $tippyOffsetY = isset($tippyArray['offsety']) ? $tippyArray['offsety'] : false;
-        $tippyPosition = isset($tippyArray['position']) ? $tippyArray['position'] : false;
-        $tippyMethod = isset($tippyArray['method']) ? $tippyArray['method'] : false;
-        $tippyContainer = isset($tippyArray['container']) ? $tippyArray['container'] : false;
-        $tippyImg = isset($tippyArray['img']) ? $tippyArray['img'] : false;
-        $tippySwapImg = isset($tippyArray['swapimg']) ? $tippyArray['swapimg'] : false;
-        $tippyUseDiv = isset($tippyArray['useDiv']) ? $tippyArray['useDiv'] : false;
-        
-        $tippyLinkText = '';
-        
-        // Check our values and build the Tippy parameters
-        if (!empty($tippyTitle)) {
-            $returnText = $tippyTitle;
-        }
-        
-        // See if the user specified an img
-        if (!empty($tippyImg)) {
-            $tippyLinkText = '<img src="'. $tippyImg .'"';
-
-            if (!empty($tippyTitle)) {
-                $tippyLinkText .= ' alt="'. $tippyTitle .'"';
-            }
-            
-            if (!empty($tippyClass)) {
-                $tippyLinkText .= ' class="'. $tippyClass .'_img"';
-            }
-            
-            $tippyLinkText .= ' />';
-        } else {
-            $tippyLinkText = $tippyTitle;
-        }
-        
-        // Check required values: linktext (either title or img) and text
-        if (!empty($tippyText) && !empty($tippyLinkText)) {
-            // Set the tooltip id
-            if (empty($tippyId)) {
-                $tippyId = 'tippy_tip'. $tippyItem .'_'. rand(100, 9999);
-            }
-
-            $this->addTippyObjectValue("id", $tippyId, "'%s'");
-
-            // See if we are using the experimental content method
-            if (($this->getOption('useDivContent') === 'true' || $tippyUseDiv === true) && (!$tippyMethod || $tippyMethod === "append")) {
-                $this->addContent($tippyTitle, $tippyText, $tippyId);
-            } else {
-                $this->addTippyObjectValue("title", htmlentities($tippyTitle, ENT_QUOTES, 'UTF-8'), "'%s'");
-                $this->addTippyObjectValue("text", htmlentities($tippyText, ENT_QUOTES, 'UTF-8'), "'%s'");
-            }
-
-            // Check href and trigger method
-            if ($this->openTip == "hover") {
-                $activateTippy = "onmouseover";
-                
-                $tippyHref = trim($tippyHref);
-                if (!empty($tippyHref))
-                {
-                    $tippyHref = 'href="'. $tippyHref .'" ';
-                }
-            } else {
-                $activateTippy = "onmouseup";
-            }
-            
-            // Check the link target
-            if (empty($tippyTarget) && $this->linkWindow == "new") {
-                $tippyTarget = 'target="_blank" ';
-            } else if (!empty($tippyTarget)) {
-                $tippyTarget = 'target="'. $tippyTarget .'" ';
-            }
-            
-            // Should Tippy be sticky?
-            if ($tippyAutoclose !== 'false' && ($this->sticky == 'false' || $tippyAutoclose == 'true')) {
-                $tippyMouseOut = 'onmouseout="Tippy.fadeTippyOut();"';
-                $this->addTippyObjectValue("sticky", "false");
-            } else {
-                $this->addTippyObjectValue("sticky", "true");
-            }
-            
-            // Should the link use the title attribute?
-            if ($this->showTitle == 'true' && !empty($tippyTitle)) {
-                $tippyTitleAttribute = sprintf('title="%s" ', htmlspecialchars($tippyTitle, ENT_COMPAT, 'UTF-8'));
-            }
-            
-            // See if we have a swap title
-            if (!empty($tippySwapTitle)) {
-                $this->addTippyObjectValue("swaptitle", $tippySwapTitle, "'%s'");
-            }
-
-            // See if we have a swap image
-            if (!empty($tippySwapImg)) {
-                $this->addTippyObjectValue("swapimg", $tippySwapImg, "'%s'");
-            }
-            
-            // Check the header; allow a variety of possibilities
-            if ($tippyHeader === true || $tippyHeader === "on" || $tippyHeader === "yes" || $tippyHeader === "true") {
-                $this->addTippyObjectValue("header", htmlentities($tippyTitle, ENT_QUOTES, 'UTF-8'), "'%s'");
-                
-                // Check the header link
-                if (!empty($tippyHeaderHref)) {
-                    $this->addTippyObjectValue("headerhref", $tippyHeaderHref, "'%s'");
-                }
-                
-                // Check the header text
-                if (!empty($tippyHeaderText)) {
-                    $this->addTippyObjectValue("headerText", htmlentities($tippyHeaderText, ENT_QUOTES, 'UTF-8'), "'%s'");
-                }
-            }
-            
-            // Check width and height
-            if ($tippyWidth !== false) {
-                $this->addTippyObjectValue("width", (int)$tippyWidth, "%d");
-            }
-            
-            if ($tippyHeight !== false) {
-                $this->addTippyObjectValue("height", (int)$tippyHeight, "%d");
-            }
-            
-            // Check the offsets
-            if ($tippyOffsetX !== false) {
-                $this->addTippyObjectValue("offsetx", (int)$tippyOffsetX, "%d");
-            }
-            
-            if ($tippyOffsetY !== false) {
-                $this->addTippyObjectValue("offsety", (int)$tippyOffsetY, "%d");
-            }
-
-            if ($tippyPosition !== false) {
-                $this->addTippyObjectValue("position", $tippyPosition, "'%s'");
-            }
-
-            if ($tippyContainer !== false) {
-                $this->addTippyObjectValue("container", $tippyContainer, "'%s'");
-            }
-            
-            // Check class/id
-            if (!empty($tippyClass)) {
-                $tippyLinkClass .= " ". $tippyClass;
-                $this->addTippyObjectValue("tippyclass", $tippyClass, "'%s'");
-            }
-
-            if (!empty($tippyName)) {
-                $tippyLinkName = 'name="'. $tippyName .'" ';
-            }
-            
-            // Check delay
-            if (!empty($tippyDelay)) {
-                $this->addTippyObjectValue("delay", (int)$tippyDelay, "%d");
-            }
-            
-            $returnText = sprintf('<a '. $tippyLinkName .' id="%s" class="%s" %s %s %s %s="Tippy.loadTip({ %s, event: event });" %s>%s</a>', $tippyId, $tippyLinkClass, $tippyHref, $tippyTarget, $tippyTitleAttribute, $activateTippy, $this->tippyObject, $tippyMouseOut, $tippyLinkText);
-
-            // Clear the object
-            $this->tippyObject = '';
-        }
-        
-        return $returnText;
-    }
-
-    private function addTippyObjectValue($valueName, $valueSetting, $valueType = '')
-    {
-        if (!empty($this->tippyObject)) {
-            $this->tippyObject .= ', ';
+        foreach ($this->tippyAttributes[$contentId] as $attributeName => $attributeValue) {
+            $tooltipAttributes .= 'data-'. $attributeName .'="'. $attributeValue .'" ';
         }
 
-        if (!empty($valueType)) {
-            $this->tippyObject .= sprintf($valueName .": $valueType", $valueSetting);
-        } else {
-            $this->tippyObject .= $valueName .": ". $valueSetting;
-        }
-    }
+        $tooltipDiv = '<div class="tippy" '. $tooltipAttributes .'>'. do_shortcode($contentText) .'</div>';
 
-    public function addContent($contentTitle, $contentText, $contentId)
-    {
-        // Inline styling from plugins is bad. Unless it isn't. Here, it isn't.
-        $newContentDiv = '<div style="display: none;" class="tippy_content_container" id="'. $contentId .'_content"><span class="tippy_title">'. $contentTitle .'</span><div class="tippy_content">'. do_shortcode($contentText) .'</div></div>';
-
-        $this->tippyContent[$contentId] = $newContentDiv;
+        $this->tippyContent[$contentId] = $tooltipDiv;
     }
 
     public function insert_tippy_content($content)

@@ -1,27 +1,28 @@
 /*
-	tippy.css
+	jquery.tippy.css
 	
-	DOM Tooltip by Chris Roberts
+	Tippy Tooltip by Chris Roberts
 	chris@dailycross.net
 	http://croberts.me/
-	
-	This file configures the look for the Tippy tooltip. Copy this file to your
-	theme's folder and adjust to match your theme.
 */
+
+.tippy {
+    display: none;
+}
 
 .tippy_link {
     font-weight: normal;
     border-bottom: 1px dotted;
     cursor: pointer;
-    position: relative;
     display: inline-block;
+    position: relative;
 }
 
 .tippy_link img {
     z-index: 1;
 }
 
-.tippy_link img.tippy_swap {
+.tippy_swap {
     position: absolute;
     top: 0;
     left: 0;
@@ -35,9 +36,7 @@
     border-radius: 5px;
     box-shadow: 0px 0px 3px #888, 4px 4px 6px #888;
 
-    z-index: 10000;
-
-    font-size: 12px;
+    z-index: 50;
 }
 
 .tippy_header {
@@ -46,7 +45,6 @@
     padding: 5px;
     border-radius: 5px 5px 0 0;
 
-    font-size: 1.5em;
     font-weight: bold;
     text-align: left;
 }
@@ -81,9 +79,6 @@
     overflow: auto;
 
     border-radius: 0 0 5px 5px;
-
-    font-size: 1.25em;
-    line-height: 1.5em;
 }
 
 .tippy_body.tippy_noheader {
@@ -92,8 +87,4 @@
 
 .tippy_body p {
     margin-bottom: .75em;
-}
-
-.tippy_content_container {
-    display: none;
 }

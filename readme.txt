@@ -4,7 +4,7 @@ Donate link: http://croberts.me/
 Tags: tooltip, popup
 Requires at least: 2.5
 Tested up to: 3.5.1
-Stable tag: 6.0.1
+Stable tag: 6.0.2
 License: MIT
 License URI: https://github.com/jquery/jquery-color/blob/2.1.2/MIT-LICENSE.txt
 
@@ -73,6 +73,9 @@ Note that even though some of the attributes have changed from older versions, t
 * closetext ('close'): The text to display for the close link.
 
 == Changelog ==
+
+= 6.0.2 =
+* API update
 
 = 6.0.1 =
 * Fixing a glitch on the sticky setting

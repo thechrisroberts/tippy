@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 6.0.1
+Version: 6.0.2
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -103,7 +103,7 @@ class Tippy {
         add_action('wp_enqueue_scripts', array('Tippy', 'load_scripts'));
         add_action('wp_enqueue_scripts', array('Tippy', 'load_styles'));
         add_action('wp_head', array('Tippy', 'initialize_tippy'));
-        add_shortcode('tippy', array('Tippy', 'shortcode'));
+        add_shortcode('tippy', array('Tippy', 'getLink'));
 
         add_filter('the_content', array('Tippy', 'insert_tippy_content'), 55);
 
@@ -422,8 +422,8 @@ class Tippy {
         wp_redirect(admin_url('options-general.php?page=tippy.php') ."&tippy_updated=$tippy_validated");
     }
 
-    // Pull data out of the shortcode and pass it to format link
-    public static function shortcode($attributes, $text = '')
+    // Take the attributes and generate the Tippy link and data container
+    public static function getLink($attributes, $text = '')
     {
         // Set an id after checking if one is in the attributes
         if (empty($attributes['id'])) {
@@ -449,6 +449,12 @@ class Tippy {
         if (isset($attributes['headertext'])) {
             $attributes['headertitle'] = $attributes['headertext'];
             unset($attributes['headertext']);
+        }
+        
+        // See if text is set in the attributes
+        if (isset($attributes['text'])) {
+            $text = $attributes['text'];
+            unset($attributes['text']);
         }
 
         // Loop through $attributes and make sure they are in self::tippyOptionNames

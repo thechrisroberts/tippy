@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 5.3.2
+Version: 6.0.0
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -26,88 +26,96 @@ Author URI: http://croberts.me/
 */
 
 class Tippy {
-    // Initialize settings
-    private $openTip = 'hover';
-    private $fadeTip = 'fade';
-    private $tipPosition = 'link';
-    private $tipOffsetX = 0;
-    private $tipOffsetY = 10;
-    private $tipOffsetXUnit = 'px';
-    private $tipOffsetYUnit = 'px';
-    private $tipContainer = false;
-    private $linkWindow = 'same';
-    private $sticky = 'false';
-    private $showTitle = true;
-    private $showClose = true;
-    private $closeLinkText = 'X';
-    private $delay = 700;
-    private $fadeRate = 200;
-    private $dragTips = true;
-    private $dragHeader = true;
-
-    private $optionsLoaded = false;
-    private $countTips = 0;
-
-    private $tippyContent = array();
-
-    private $tippyObject = '';
+    // Initialize default options
+    private static $tippyGlobalOptions = array(
+                    'openTip' => 'hover',
+                    'fadeTip' => 'fade',
+                    'tipPosition' => 'link',
+                    'tipOffsetX' => 0,
+                    'tipOffsetY' => 10,
+                    'tipContainer' => false,
+                    'linkWindow' => 'same',
+                    'sticky' => false,
+                    'showTitle' => true,
+                    'showClose' => true,
+                    'closeLinkText' => 'X',
+                    'delay' => 700,
+                    'fadeRate' => 200,
+                    'dragTips' => true,
+                    'dragHeader' => true,
+                    'multitip' => false,
+                    'autoshow' => false,
+                    'showdelay' => 100,
+                    'hidespeed' => 200,
+                    'showheader' => true);
 
     // List all options possible for Tippy. Used to verify valid attributes
     // in the shortcode.
-    private $tippyOptionNames = array(
-                                    'multitip', 
-                                    'autoshow', 
-                                    'showtitle', 
-                                    'hoverpopup', 
-                                    'showdelay', 
-                                    'showspeed', 
-                                    'hidespeed', 
-                                    'autoclose', 
-                                    'hidedelay', 
-                                    'container', 
-                                    'position', 
-                                    'top', 
-                                    'bottom', 
-                                    'left', 
-                                    'right', 
-                                    'offsetx', 
-                                    'offsety', 
-                                    'width', 
-                                    'height', 
-                                    'draggable', 
-                                    'dragheader', 
-                                    'anchor', 
-                                    'title', 
-                                    'swaptitle', 
-                                    'img', 
-                                    'swapimg', 
-                                    'href', 
-                                    'target', 
-                                    'showheader', 
-                                    'headertitle', 
-                                    'headerhref', 
-                                    'showclose', 
-                                    'closetext');
+    private static $tippyOptionNames = array(
+                    'multitip', 
+                    'autoshow', 
+                    'showtitle', 
+                    'hoverpopup', 
+                    'showdelay', 
+                    'showspeed', 
+                    'hidespeed', 
+                    'autoclose', 
+                    'hidedelay', 
+                    'container', 
+                    'position', 
+                    'top', 
+                    'bottom', 
+                    'left', 
+                    'right', 
+                    'offsetx', 
+                    'offsety', 
+                    'width', 
+                    'height', 
+                    'draggable', 
+                    'dragheader', 
+                    'anchor', 
+                    'title', 
+                    'swaptitle', 
+                    'img', 
+                    'swapimg', 
+                    'href', 
+                    'target', 
+                    'showheader', 
+                    'headertitle', 
+                    'headerhref', 
+                    'showclose', 
+                    'closetext',
+                    'class',
+                    'id',
+                    'name');
+    
+    // Various helper properties
+    private static $optionsLoaded = false;
+    private static $countTips = 0;
+
+    private static $tippyContent = array();
+    private static $tippyAttributes = array();
+    private static $tippyObject = '';
 
     // Initialize everything
-    public function __construct()
+    public static function init()
     {
-        add_action('wp_enqueue_scripts', array($this, 'load_scripts'));
-        add_action('wp_enqueue_scripts', array($this, 'load_styles'));
-        add_action('wp_head', array($this, 'initialize_tippy'));
-        add_shortcode('tippy', array($this, 'shortcode'));
+        add_action('wp_enqueue_scripts', array('Tippy', 'load_scripts'));
+        add_action('wp_enqueue_scripts', array('Tippy', 'load_styles'));
+        add_action('wp_head', array('Tippy', 'initialize_tippy'));
+        add_shortcode('tippy', array('Tippy', 'shortcode'));
 
-        add_filter('the_content', array($this, 'insert_tippy_content'), 55);
+        add_filter('the_content', array('Tippy', 'insert_tippy_content'), 55);
 
         // Admin tasks
-        add_action('admin_menu', array($this, 'admin_menu'));
-        add_action('admin_init', array($this, 'admin_init'));
-        add_action('admin_action_tippy-options', array($this, 'admin_validate_options'));
+        add_action('admin_menu', array('Tippy', 'admin_menu'));
+        add_action('admin_init', array('Tippy', 'admin_init'));
+        add_action('admin_action_tippy-options', array('Tippy', 'admin_validate_options'));
 
-        add_filter('plugin_action_links', array($this, 'settings_link'), 10, 2);
+        add_filter('plugin_action_links', array('Tippy', 'settings_link'), 10, 2);
     }
 
-    public function settings_link($links, $file) { 
+    public static function settings_link($links, $file) { 
         if ($file == 'tippy/tippy.php') {
             $settings_link = '<a href="options-general.php?page=tippy.php">Settings</a>'; 
             array_push($links, $settings_link);
@@ -116,7 +124,7 @@ class Tippy {
         return $links; 
     }
 
-    private function loadOptions()
+    private static function loadOptions()
     {
         // Grab the Tippy array.
         $optionsArray = get_option('tippy_options', array());
@@ -125,39 +133,38 @@ class Tippy {
         // used an older Tippy before the options array. If we find old options,
         // update the user options.
         if (empty($optionsArray) && get_option('tippy_openTip', false)) {
-            $this->updateOutdated();
+            self::updateOutdated();
         } else if (!empty($optionsArray)) {
-            // We have options. Load them into the class, overwriting defaults.
-            foreach ($optionsArray as $optionName => $optionValue) {
-                $this->$optionName = $optionValue;
-            }
+            $mergedOptions = array_merge(self::$tippyGlobalOptions, $optionsArray);
+
+            self::$tippyGlobalOptions = $mergedOptions;
         } else {
             // No options stored, rely on already set default values. Save them
             // for next time.
-            $this->saveOptions();
+            self::saveOptions();
         }
 
-        $this->optionsLoaded = true;
+        self::$optionsLoaded = true;
     }
 
-    private function updateOutdated()
+    private static function updateOutdated()
     {
         // Load the old individual options with our predefined defaults as backup
-        $this->openTip = get_option('tippy_openTip', $this->openTip);
-        $this->fadeTip = get_option('tippy_fadeTip', $this->fadeTip);
-        $this->tipPosition = get_option('tippy_tipPosition', $this->tipPosition);
-        $this->tipOffsetX = get_option('tippy_tipOffsetX', $this->tipOffsetX);
-        $this->tipOffsetY = get_option('tippy_tipOffsetY', $this->tipOffsetY);
-        $this->linkWindow = get_option('tippy_linkWindow', $this->linkWindow);
-        $this->sticky = get_option('tippy_sticky', $this->sticky);
-        $this->showTitle = get_option('tippy_showTitle', $this->showTitle);
-        $this->showClose = get_option('tippy_showClose', $this->showClose);
-        $this->closeLinkText = get_option('tippy_closeLinkText', $this->closeLinkText);
-        $this->delay = get_option('tippy_delay', $this->delay);
-        $this->fadeRate = get_option('tippy_faderate', $this->fadeRate);
+        self::$tippyGlobalOptions['openTip'] = get_option('tippy_openTip', self::$tippyGlobalOptions['openTip']);
+        self::$tippyGlobalOptions['fadeTip'] = get_option('tippy_fadeTip', self::$tippyGlobalOptions['fadeTip']);
+        self::$tippyGlobalOptions['tipPosition'] = get_option('tippy_tipPosition', self::$tippyGlobalOptions['tipPosition']);
+        self::$tippyGlobalOptions['tipOffsetX'] = get_option('tippy_tipOffsetX', self::$tippyGlobalOptions['tipOffsetX']);
+        self::$tippyGlobalOptions['tipOffsetY'] = get_option('tippy_tipOffsetY', self::$tippyGlobalOptions['tipOffsetY']);
+        self::$tippyGlobalOptions['linkWindow'] = get_option('tippy_linkWindow', self::$tippyGlobalOptions['linkWindow']);
+        self::$tippyGlobalOptions['sticky'] = get_option('tippy_sticky', self::$tippyGlobalOptions['sticky']);
+        self::$tippyGlobalOptions['showTitle'] = get_option('tippy_showTitle', self::$tippyGlobalOptions['showTitle']);
+        self::$tippyGlobalOptions['showClose'] = get_option('tippy_showClose', self::$tippyGlobalOptions['showClose']);
+        self::$tippyGlobalOptions['closeLinkText'] = get_option('tippy_closeLinkText', self::$tippyGlobalOptions['closeLinkText']);
+        self::$tippyGlobalOptions['delay'] = get_option('tippy_delay', self::$tippyGlobalOptions['delay']);
+        self::$tippyGlobalOptions['fadeRate'] = get_option('tippy_faderate', self::$tippyGlobalOptions['fadeRate']);
 
         // Save options to the new array and delete the old options
-        if ($this->saveOptions()) {
+        if (self::saveOptions()) {
             delete_option('tippy_openTip');
             delete_option('tippy_fadeTip');
             delete_option('tippy_tipPosition');
@@ -173,64 +180,67 @@ class Tippy {
         }
     }
 
-    private function saveOptions()
+    private static function saveOptions()
     {
         // Store values into our array
-        $optionsArray = array('openTip' => $this->openTip,
-                              'fadeTip' => $this->fadeTip,
-                              'tipPosition' => $this->tipPosition,
-                              'tipOffsetX' => $this->tipOffsetX,
-                              'tipOffsetY' => $this->tipOffsetY,
-                              // 'tipOffsetXUnit' => $this->tipOffsetXUnit,
-                              // 'tipOffsetYUnit' => $this->tipOffsetYUnit,
-                              'tipContainer' => $this->tipContainer,
-                              'linkWindow' => $this->linkWindow,
-                              'sticky' => $this->sticky,
-                              'showTitle' => $this->showTitle,
-                              'showClose' => $this->showClose,
-                              'closeLinkText' => $this->closeLinkText,
-                              'delay' => $this->delay,
-                              'fadeRate' => $this->fadeRate,
-                              'dragTips' => $this->dragTips,
-                              'dragHeader' => $this->dragHeader);
+        $optionsArray = array('openTip' => self::$tippyGlobalOptions['openTip'],
+                              'fadeTip' => self::$tippyGlobalOptions['fadeTip'],
+                              'tipPosition' => self::$tippyGlobalOptions['tipPosition'],
+                              'tipOffsetX' => self::$tippyGlobalOptions['tipOffsetX'],
+                              'tipOffsetY' => self::$tippyGlobalOptions['tipOffsetY'],
+                              'tipContainer' => self::$tippyGlobalOptions['tipContainer'],
+                              'linkWindow' => self::$tippyGlobalOptions['linkWindow'],
+                              'sticky' => self::$tippyGlobalOptions['sticky'],
+                              'showTitle' => self::$tippyGlobalOptions['showTitle'],
+                              'showClose' => self::$tippyGlobalOptions['showClose'],
+                              'closeLinkText' => self::$tippyGlobalOptions['closeLinkText'],
+                              'delay' => self::$tippyGlobalOptions['delay'],
+                              'fadeRate' => self::$tippyGlobalOptions['fadeRate'],
+                              'dragTips' => self::$tippyGlobalOptions['dragTips'],
+                              'dragHeader' => self::$tippyGlobalOptions['dragHeader'],
+                              'multitip' => self::$tippyGlobalOptions['multitip'],
+                              'autoshow' => self::$tippyGlobalOptions['autoshow'],
+                              'showdelay' => self::$tippyGlobalOptions['showdelay'],
+                              'hidespeed' => self::$tippyGlobalOptions['hidespeed'],
+                              'showheader' => self::$tippyGlobalOptions['showheader']);
 
         return update_option('tippy_options', $optionsArray);
     }
 
-    public function getOption($optionName)
+    public static function getOption($optionName)
     {
         // Check to see if we've already tried to load saved options. If not, load them.
-        if (!$this->optionsLoaded) {
-            $this->loadOptions();
+        if (!self::$optionsLoaded) {
+            self::loadOptions();
         }
 
-        if (isset($this->$optionName)) {
-            return $this->$optionName;
+        if (isset(self::$tippyGlobalOptions[$optionName])) {
+            return self::$tippyGlobalOptions[$optionName];
         } else {
             return false;
         }
     }
 
-    public function register_scripts()
+    public static function register_scripts()
     {
         wp_register_script('Tippy', plugins_url() .'/tippy/jquery.tippy.js', array('jquery'), '6.0.0');
     }
 
-    public function load_scripts()
+    public static function load_scripts()
     {
         // Load jQuery, if not already present
         wp_enqueue_script('jquery');
         
-        if ($this->dragTips) {
+        if (self::getOption('dragTips')) {
             wp_enqueue_script('jquery-ui-draggable');
         }
         
         // Load the Tippy script
-        $this->register_scripts();
+        self::register_scripts();
         wp_enqueue_script('Tippy');
     }
 
-    public function register_styles()
+    public static function register_styles()
     {
         // Load the Tippy css. Checks for several possibilities with the css file.
         // Includes checks for deprecated names.
@@ -249,100 +259,158 @@ class Tippy {
         }
     }
 
-    public function load_styles()
+    public static function load_styles()
     {
-        $this->register_styles();
+        self::register_styles();
         wp_enqueue_style('Tippy');
     }
 
-    public function initialize_tippy()
+    public static function initialize_tippy()
     {
-        if ($this->getOption('fadeTip') == "fade") {
-            $tippyFadeRate = $this->getOption('fadeRate');
+        if (!self::getOption('tipContainer') || self::getOption('tipContainer') == "") {
+            $setContainer = '';
         } else {
-            $tippyFadeRate = 0;
-        }
-
-        if (!$this->getOption('tipContainer') || $this->getOption('tipContainer') == "") {
-            $setContainer = '"body"';
-        } else {
-            $setContainer = '"'. $this->getOption('tipContainer') .'"';
+            $setContainer = self::getOption('tipContainer');
         }
         
+        // Prepare the js object with our options
+        $setOptions = 'position: "'. self::getOption("tipPosition") .'", ';
+        $setOptions .= 'offsetx: '. self::getOption("tipOffsetX") .', ';
+        $setOptions .= 'offsety: '. self::getOption("tipOffsetY") .', ';
+        $setOptions .= 'closetext: "'. self::getOption("closeLinkText") .'", ';
+        $setOptions .= 'hidedelay: '. self::getOption("delay") .', ';
+        $setOptions .= 'showdelay: '. self::getOption("showdelay");
+
+        if (self::getOption('fadeTip') == "fade") {
+            $setOptions .= ', showspeed: '. self::getOption('fadeRate') .'';
+            $setOptions .= ', hidespeed: '. self::getOption('hidespeed') .'';
+        } else {
+            $setOptions .= ', showspeed: 0';
+            $setOptions .= ', hidespeed: 0';
+        }
+
+
+        if (!empty($setContainer)) {
+            $setOptions .= ', container: "'. $setContainer .'"';
+        }
+
+        if (self::getOption('sticky')) {
+            $setOptions .= ', autoclose: false';
+        }
+
+        if (Tippy::getOption('linkWindow') == "new") {
+            $setOptions .= ', target: "_blank"';
+        }
+        
+        if (Tippy::getOption('showTitle')) {
+            $setOptions .= ', showtitle: true';
+        } else {
+            $setOptions .= ', showtitle: false';
+        }
+        
+        if (Tippy::getOption('openTip') == "hover") {
+            $setOptions .= ', hoverpopup: true';
+        } else {
+            $setOptions .= ', hoverpopup: false';
+        }
+        
+        if (Tippy::getOption('dragTips')) {
+            $setOptions .= ', draggable: true';
+        } else {
+            $setOptions .= ', draggable: false';
+        }
+        
+        if (Tippy::getOption('dragHeader')) {
+            $setOptions .= ', dragheader: true';
+        } else {
+            $setOptions .= ', dragheader: false';
+        }
+        
+        if (Tippy::getOption('multitip')) {
+            $setOptions .= ', multitip: true';
+        } else {
+            $setOptions .= ', multitip: false';
+        }
+        
+        if (Tippy::getOption('autoshow')) {
+            $setOptions .= ', autoshow: true';
+        } else {
+            $setOptions .= ', autoshow: false';
+        }
+        
+        
+        if (Tippy::getOption('showheader')) {
+            $setOptions .= ', showheader: true';
+        } else {
+            $setOptions .= ', showheader: false';
+        }
+        
+        if (Tippy::getOption('showClose')) {
+            $setOptions .= ', showclose: true';
+        } else {
+            $setOptions .= ', showclose: false';
+        }
+
         echo '
             <script type="text/javascript">
                 jQuery(\'document\').ready(function() {
-                    jQuery(\'.tippy\').tippy();
+                    jQuery(\'.tippy\').tippy({ '. $setOptions .' });
                 });
-                
-                /*
-                Tippy.initialize({
-                    tipPosition: "'. $this->getOption("tipPosition") .'",
-                    tipContainer: '. $setContainer .',
-                    tipOffsetX: '. $this->getOption("tipOffsetX") .',
-                    tipOffsetY: '. $this->getOption("tipOffsetY") .',
-                    fadeRate: '. $tippyFadeRate .',
-                    sticky: '. $this->getOption("sticky") .',
-                    showClose: '. $this->getOption("showClose") .',
-                    closeText: "'. $this->getOption("closeLinkText") .'",
-                    delay: '. $this->getOption("delay") .',
-                    draggable: '. $this->getOption("dragTips") .',
-                    dragheader: '. $this->getOption("dragHeader") .'
-                });
-                */
             </script>
-
         ';
     }
 
-    public function admin_menu()
+    public static function admin_menu()
     {
         require_once(plugin_dir_path(__FILE__) .'/tippy_admin.php');
 
         $page = add_options_page('Tippy Plugin Options', 'Tippy', 'manage_options', basename(__FILE__), 'tippy_options_subpanel');
 
-        add_action('admin_print_styles-' . $page, array($this, 'admin_load_styles'));
+        add_action('admin_print_styles-' . $page, array('Tippy', 'admin_load_styles'));
     }
 
-    public function admin_init()
+    public static function admin_init()
     {
         wp_register_style('TippyAdmin', plugins_url() .'/tippy/tippy_admin.css');
-        $this->register_styles();
-        $this->register_scripts();
+        self::register_styles();
+        self::register_scripts();
     }
 
-    public function admin_load_styles()
+    public static function admin_load_styles()
     {
         wp_enqueue_style('TippyAdmin');
-        $this->load_styles();
-        $this->load_scripts();
+        self::load_styles();
+        self::load_scripts();
     }
 
-    public function admin_validate_options()
+    public static function admin_validate_options()
     {
         $tippy_validated = "0";
 
         // Retrieve and save settings
         if (isset($_POST['info_update']) && is_admin() && wp_verify_nonce($_POST['tippy_verify'], 'tippy-options')) {
-            $this->openTip = sanitize_text_field($_POST['openTip']);
-            $this->fadeTip = sanitize_text_field($_POST['fadeTip']);
-            $this->tipPosition = sanitize_text_field($_POST['tipPosition']);
-            $this->tipOffsetX = intval($_POST['tipOffsetX']);
-            $this->tipOffsetY = intval($_POST['tipOffsetY']);
-            // $this->tipOffsetX = sanitize_text_field($_POST['tipOffsetXUnit']);
-            // $this->tipOffsetY = sanitize_text_field($_POST['tipOffsetYUnit']);
-            $this->tipContainer = isset($_POST['tipContainer']) ? sanitize_text_field($_POST['tipContainer']) : false;
-            $this->linkWindow = sanitize_text_field($_POST['linkWindow']);
-            $this->sticky = sanitize_text_field($_POST['sticky']);
-            $this->showTitle = isset($_POST['showTitle']) ? true : false;
-            $this->showClose = isset($_POST['showClose']) ? "true" : "false";
-            $this->closeLinkText = isset($_POST['closeLinkText']) ? sanitize_text_field($_POST['closeLinkText']) : 'X';
-            $this->delay = isset($_POST['delay']) ? intval($_POST['delay']) : 900;
-            $this->fadeRate = isset($_POST['faderate']) ? intval($_POST['faderate']) : 300;
-            $this->dragTips = isset($_POST['dragTips']) ? "true" : "false";
-            $this->dragHeader = isset($_POST['dragHeader']) ? "true" : "false";
+            self::$tippyGlobalOptions['openTip'] = sanitize_text_field($_POST['openTip']);
+            self::$tippyGlobalOptions['fadeTip'] = sanitize_text_field($_POST['fadeTip']);
+            self::$tippyGlobalOptions['tipPosition'] = sanitize_text_field($_POST['tipPosition']);
+            self::$tippyGlobalOptions['tipOffsetX'] = intval($_POST['tipOffsetX']);
+            self::$tippyGlobalOptions['tipOffsetY'] = intval($_POST['tipOffsetY']);
+            self::$tippyGlobalOptions['tipContainer'] = isset($_POST['tipContainer']) ? sanitize_text_field($_POST['tipContainer']) : false;
+            self::$tippyGlobalOptions['linkWindow'] = sanitize_text_field($_POST['linkWindow']);
+            self::$tippyGlobalOptions['sticky'] = ($_POST['sticky'] == "true") ? true : false;
+            self::$tippyGlobalOptions['showTitle'] = isset($_POST['showTitle']) ? true : false;
+            self::$tippyGlobalOptions['showClose'] = isset($_POST['showClose']) ? true : false;
+            self::$tippyGlobalOptions['closeLinkText'] = isset($_POST['closeLinkText']) ? sanitize_text_field($_POST['closeLinkText']) : 'X';
+            self::$tippyGlobalOptions['delay'] = isset($_POST['delay']) ? intval($_POST['delay']) : 900;
+            self::$tippyGlobalOptions['fadeRate'] = isset($_POST['faderate']) ? intval($_POST['faderate']) : 300;
+            self::$tippyGlobalOptions['dragTips'] = isset($_POST['dragTips']) ? true : false;
+            self::$tippyGlobalOptions['dragHeader'] = isset($_POST['dragHeader']) ? true : false;
+            self::$tippyGlobalOptions['multitip'] = isset($_POST['multitip']) ? true : false;
+            self::$tippyGlobalOptions['autoshow'] = isset($_POST['autoshow']) ? true : false;
+            self::$tippyGlobalOptions['showdelay'] = isset($_POST['showdelay']) ? intval($_POST['showdelay']) : 100;
+            self::$tippyGlobalOptions['hidespeed'] = isset($_POST['hidespeed']) ? intval($_POST['hidespeed']) : 300;
+            self::$tippyGlobalOptions['showheader'] = isset($_POST['showheader']) ? true : false;
 
-            $this->saveOptions();
+            self::saveOptions();
 
             $tippy_validated = "1";
         } else if (isset($_POST['info_update'])) {
@@ -355,11 +423,11 @@ class Tippy {
     }
 
     // Pull data out of the shortcode and pass it to format link
-    public function shortcode($attributes, $text = '')
+    public static function shortcode($attributes, $text = '')
     {
         // Set an id after checking if one is in the attributes
         if (empty($attributes['id'])) {
-            $tippyId = 'tippy_tip'. $tippyItem .'_'. rand(100, 9999);
+            $tippyId = 'tippy_tip'. self::$countTips .'_'. rand(100, 9999);
         } else {
             $tippyId = $attributes['id'];
 
@@ -367,58 +435,78 @@ class Tippy {
             unset($attributes['id']);
         }
 
-        // Loop through $attributes and make sure they are in $this->tippyOptionNames
+        // Map old Tippy attributes to their new names. Only a few changes.
+        if (isset($attributes['header'])) {
+            if ($attributes['header'] == "on") {
+                $attributes['showheader'] = true;
+            } else {
+                $attributes['showheader'] = false;
+            }
+
+            unset($attributes['header']);
+        }
+
+        if (isset($attributes['headertext'])) {
+            $attributes['headertitle'] = $attributes['headertext'];
+            unset($attributes['headertext']);
+        }
+
+        // Loop through $attributes and make sure they are in self::tippyOptionNames
         // then add them to our data set
         foreach ($attributes as $attName => $attValue) {
-            if (in_array($attName, $this->tippyOptionNames)) {
-                $this->addAttribute($attName, $attValue, $tippyId);
+            if (in_array($attName, self::$tippyOptionNames)) {
+                self::addAttribute($attName, $attValue, $tippyId);
             }
         }
 
-        $this->addContent($text, $tippyId);
+        // Set the anchor
+        self::addAttribute('anchor', '#'. $tippyId .'_anchor', $tippyId);
+
+        // Create the div with the text in place
+        self::addContent($text, $tippyId);
         
-        $this->countTips++;
+        self::$countTips++;
         
-        return $tippyLink;
+        return '<a id="'. $tippyId .'_anchor"></a>';
     }
 
-    private function addAttribute($attributeName, $attributeValue, $contentId)
+    private static function addAttribute($attributeName, $attributeValue, $contentId)
     {
-        $this->tippyAttributes[$contentId][$attributeName] = $attributeValue;
+        self::$tippyAttributes[$contentId][$attributeName] = $attributeValue;
     }
 
-    private function addContent($contentText, $contentId)
+    private static function addContent($contentText, $contentId)
     {
         // Put the attributes together
         $tooltipAttributes = '';
         
-        foreach ($this->tippyAttributes[$contentId] as $attributeName => $attributeValue) {
+        foreach (self::$tippyAttributes[$contentId] as $attributeName => $attributeValue) {
             $tooltipAttributes .= 'data-'. $attributeName .'="'. $attributeValue .'" ';
         }
 
         $tooltipDiv = '<div class="tippy" '. $tooltipAttributes .'>'. do_shortcode($contentText) .'</div>';
 
-        $this->tippyContent[$contentId] = $tooltipDiv;
+        self::$tippyContent[$contentId] = $tooltipDiv;
     }
 
-    public function insert_tippy_content($content)
+    public static function insert_tippy_content($content)
     {
         $tippyContent = '';
 
-        if (!empty($this->tippyContent)) {
-            foreach ($this->tippyContent as $contentId => $contentDiv) {
+        if (!empty(self::$tippyContent)) {
+            foreach (self::$tippyContent as $contentId => $contentDiv) {
                 $tippyContent .= $contentDiv ."\r\n";
             }
         }
 
         // Since we've used the content, clear it out.
-        $this->tippyContent = array();
+        self::$tippyContent = array();
 
         return $content . $tippyContent;
     }
 }
 
-$tippy = new Tippy();
+Tippy::init();
 
 /*
  * The following are deprecated or helper functions
@@ -427,32 +515,28 @@ $tippy = new Tippy();
 if (! function_exists('tippy_formatLink') ) {
     function tippy_formatLink($tippyShowHeader, $tippyTitle, $tippyHref, $tippyText, $tippyCustomClass, $tippyItem, $tippyWidth = false, $tippyHeight = false)
     {
-        global $tippy;
-        return $tippy->getLink(array('header' => $tippyShowHeader, 'title' => $tippyTitle, 'href' => $tippyHref, 'text' => $tippyText, 'class' => $tippyCustomClass, 'item' => $tippyItem, 'width' => $tippyWidth, 'height' => $tippyHeight));
+        return Tippy::getLink(array('header' => $tippyShowHeader, 'title' => $tippyTitle, 'href' => $tippyHref, 'text' => $tippyText, 'class' => $tippyCustomClass, 'item' => $tippyItem, 'width' => $tippyWidth, 'height' => $tippyHeight));
     }
 }
 
 if (! function_exists('tippy_getLink')) {
     function tippy_getLink($tippyArray)
     {
-        global $tippy;
-        return $tippy->getLink($tippyArray);
+        return Tippy::getLink($tippyArray);
     }
 }
 
 if (!function_exists('tippy_format_title')) {
     function tippy_format_title($tippy_title)
     {
-        global $tippy;
-        return $tippy->format_title($tippy_title);
+        return $tippy_title;
     }
 }
 
 if (!function_exists('tippy_format_text')) {
     function tippy_format_text($tippy_text)
     {
-        global $tippy;
-        return $tippy->format_text($tippy_text);
+        return $tippy_text;
     }
 }
 

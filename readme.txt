@@ -5,6 +5,8 @@ Tags: tooltip, popup
 Requires at least: 2.5
 Tested up to: 3.5.1
 Stable tag: 6.0.0
+License: MIT
+License URI: https://github.com/jquery/jquery-color/blob/2.1.2/MIT-LICENSE.txt
 
 Allows users to turn text into a tooltip or popup using a special [tippy] tag.
 
@@ -21,13 +23,61 @@ Visit the Tippy Options page under the Settings section of your dashboard.
 To customize the tooltip styling, copy plugins/tippy/tippy.css to your theme folder and modify as you wish. Tippy will look for tippy.css in your theme folder before it tries to load its own copy.
 
 To use Tippy, just place Tippy tags wherever you want in your post. All of the attributes are optional except for title (or img) and the text between the shortcode tags. Example:
-[tippy title="I am a tooltip!" class="myclass" header="on" href="http://croberts.me/" width="450" height="200"]When you hover over a Tippy link, you will get a popup.[/tippy]
+[tippy title="I am a tooltip!" class="myclass" showheader="true" href="http://croberts.me/" width="450" height="200"]When you hover over a Tippy link, you will get a popup.[/tippy]
 
 == Screenshots ==
 
 1. Tippy in action!
 
+== Upgrade Notice ==
+
+Tippy 6.x represents a major upgrade over previous versions but should remain fully backwards compatible. Please report any bugs that may be encountered.
+
+== Shortcode Attributes ==
+
+The following options can all be included as attributes in your shortcode. Default values, when applicable, are shown in parenthesis. Multiple possible values are listed in parenthesis with the default first.
+
+Note that even though some of the attributes have changed from older versions, the old attributes should continue to work. You will not need to update shortcodes that use the old names.
+
+* autoshow (false/true): If true, the tooltip or tooltips will automatically show when the page loads.
+* showtitle (false/true): Whether or not to use the title attribute in links. Good for accessibility, bad for visibility.
+* hoverpopup (true/false): If true, tooltip displays when hovering over the link. If false, tooltip displays when the link is clicked.
+* showdelay (100): Adds a slight delay before displaying the tooltip to prevent popping up tooltips when the mouse moves across the page.
+* showspeed (200): How long it takes in ms for the tooltip to fade in.
+* hidespeed (200): How long it takes in ms for the tooltip to fade out.
+* autoclose (true/false): Whether or not the tooltip should automatically close after a delay.
+* hidedelay (1000): How long it takes in ms before the tooltip begins to auto fade out.
+* container: By default, the tooltip is placed in the DOM right where you set it but if you want to use Tippy for specific positioning, you can change its parent element by specifying a CSS selector here.
+* position (link/mouse/css position value): Specifies where the tooltip should be positioned. If set to link or mouse, the x and y values are automatically determined.
+* top: Useful when position set to fixed, absolute, or relative.
+* bottom: Useful when position set to fixed, absolute, or relative.
+* left: Useful when position set to fixed, absolute, or relative.
+* right: Useful when position set to fixed, absolute, or relative.
+* offsetx (10): Set a default horizontal offset for the tooltip position. Useful when position set to link or mouse.
+* offsety (10): Set a default vertical offset for the tooltip position. Useful when position set to link or mouse.
+* width: Specify a width for the tooltip. The default is set in jquery.tippy.css.
+* height: Specify a height for the tooltip. The default is set in jquery.tippy.css.
+* draggable (false/true): Allow visitors to drag the tooltip around. Useful when autoclose is false. Requires jQuery UI.
+* dragheader (true/false): If draging is enabled and this is set to true, tooltip will only be draggable from the header bar. If false, visitors can drag from any part of the tooltip.
+* anchor: Optional CSS selector specifying the link element that will trigger Tippy.
+* title: Sets the text shown on the link and in the header.
+* swaptitle: Alternate title to use when the visitor hovers over the link.
+* img: Tippy can be used with images rather than text; set img to the url of an image to display Tippy on an image.
+* swapimg: Like swaptitle, swapimg switches to an alternate image when a visitor hovers over the link.
+* href: If href is set, the Tippy link will point to this url.
+* target: Specifies the link target for the Tippy link.
+* showheader (true/false): Whether or not the tooltip should show a header.
+* headertitle: By default, the header is set to the tooltip title. With headertitle, you can set specific text for the title.
+* headerhref: If headerhref is set, the tooltip header text will be a link pointing to this url.
+* showclose (true/false): Whether or not the tooltip have a close link. Usefor for mobile devices or when autoclose is false.
+* closetext ('close'): The text to display for the close link.
+
 == Changelog ==
+
+= 6.0.0 =
+* Replaced original tippy.js with the new jquery.tippy.js https://github.com/thechrisroberts/jquery-tippy
+* Major updates to tippy.php to work with the new script while maintaining backwards compatibility
+* 
 
 = 5.3.2 = 
 * Fixed a styling quirk with images

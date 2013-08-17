@@ -86,12 +86,12 @@ if (! function_exists('tippy_options_subpanel')) {
 
 			<div class="tippyHeader"><span>Close method</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" position="link" delay="900" offsetx="0" offsety="10" width="400"]Should the tooltip automatically disappear when the visitor mouses away, or should visitors have to manually close the tooltip? (Note, you will need to be sure to specify "Show close links" if you set this to remain sticky.)[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
-				<input id="tippy_sticky_auto" name="sticky" type="radio" value="false" <?php if (!Tippy::getOption('sticky')) echo "checked" ?> />
+				<input id="tippy_sticky_auto" name="sticky" type="radio" value="false" <?php if (Tippy::getOption('sticky') === false || Tippy::getOption('sticky') == "false") echo "checked" ?> />
 					<label for="tippy_sticky_auto">
 						Automatically closes when visitor mouses away from the link or tooltip
 					</label><br />
 				
-				<input id="tippy_sticky_stick" name="sticky"  type="radio" value="true" <?php if (Tippy::getOption('sticky')) echo "checked" ?> />
+				<input id="tippy_sticky_stick" name="sticky"  type="radio" value="true" <?php if (Tippy::getOption('sticky') === true || Tippy::getOption('sticky') == "true") echo "checked" ?> />
 					<label for="tippy_sticky_stick">
 						Remain visible until visitor manually closes the tooltip
 					</label>

@@ -4,7 +4,7 @@ Donate link: http://croberts.me/
 Tags: tooltip, popup
 Requires at least: 2.5
 Tested up to: 3.5.1
-Stable tag: 6.0.0
+Stable tag: 6.0.1
 License: MIT
 License URI: https://github.com/jquery/jquery-color/blob/2.1.2/MIT-LICENSE.txt
 
@@ -74,10 +74,12 @@ Note that even though some of the attributes have changed from older versions, t
 
 == Changelog ==
 
+= 6.0.1 =
+* Fixing a glitch on the sticky setting
+
 = 6.0.0 =
 * Replaced original tippy.js with the new jquery.tippy.js https://github.com/thechrisroberts/jquery-tippy
 * Major updates to tippy.php to work with the new script while maintaining backwards compatibility
-* 
 
 = 5.3.2 = 
 * Fixed a styling quirk with images

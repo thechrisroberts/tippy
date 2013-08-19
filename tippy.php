@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 6.0.5
+Version: 6.0.6
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -47,7 +47,8 @@ class Tippy {
                     'autoshow' => false,
                     'showdelay' => 100,
                     'hidespeed' => 200,
-                    'showheader' => true);
+                    'showheader' => true,
+                    'calcpos' => 'parent');
 
     // List all options possible for Tippy. Used to verify valid attributes
     // in the shortcode.
@@ -87,7 +88,8 @@ class Tippy {
                     'closetext',
                     'class',
                     'id',
-                    'name');
+                    'name',
+                    'calcpos');
     
     // Various helper properties
     private static $optionsLoaded = false;
@@ -182,29 +184,8 @@ class Tippy {
 
     private static function saveOptions()
     {
-        // Store values into our array
-        $optionsArray = array('openTip' => self::$tippyGlobalOptions['openTip'],
-                              'fadeTip' => self::$tippyGlobalOptions['fadeTip'],
-                              'tipPosition' => self::$tippyGlobalOptions['tipPosition'],
-                              'tipOffsetX' => self::$tippyGlobalOptions['tipOffsetX'],
-                              'tipOffsetY' => self::$tippyGlobalOptions['tipOffsetY'],
-                              'tipContainer' => self::$tippyGlobalOptions['tipContainer'],
-                              'linkWindow' => self::$tippyGlobalOptions['linkWindow'],
-                              'sticky' => self::$tippyGlobalOptions['sticky'],
-                              'showTitle' => self::$tippyGlobalOptions['showTitle'],
-                              'showClose' => self::$tippyGlobalOptions['showClose'],
-                              'closeLinkText' => self::$tippyGlobalOptions['closeLinkText'],
-                              'delay' => self::$tippyGlobalOptions['delay'],
-                              'fadeRate' => self::$tippyGlobalOptions['fadeRate'],
-                              'dragTips' => self::$tippyGlobalOptions['dragTips'],
-                              'dragHeader' => self::$tippyGlobalOptions['dragHeader'],
-                              'multitip' => self::$tippyGlobalOptions['multitip'],
-                              'autoshow' => self::$tippyGlobalOptions['autoshow'],
-                              'showdelay' => self::$tippyGlobalOptions['showdelay'],
-                              'hidespeed' => self::$tippyGlobalOptions['hidespeed'],
-                              'showheader' => self::$tippyGlobalOptions['showheader']);
-
-        return update_option('tippy_options', $optionsArray);
+        // Save the options array
+        return update_option('tippy_options', self::$tippyGlobalOptions);
     }
 
     public static function getOption($optionName)
@@ -279,7 +260,8 @@ class Tippy {
         $setOptions .= 'offsety: '. self::getOption("tipOffsetY") .', ';
         $setOptions .= 'closetext: "'. self::getOption("closeLinkText") .'", ';
         $setOptions .= 'hidedelay: '. self::getOption("delay") .', ';
-        $setOptions .= 'showdelay: '. self::getOption("showdelay");
+        $setOptions .= 'showdelay: '. self::getOption("showdelay") .', ';
+        $setOptions .= 'calcpos: "'. self::getOption("calcpos") .'"';
 
         if (self::getOption('fadeTip') == "fade") {
             $setOptions .= ', showspeed: '. self::getOption('fadeRate') .'';
@@ -409,6 +391,7 @@ class Tippy {
             self::$tippyGlobalOptions['showdelay'] = isset($_POST['showdelay']) ? intval($_POST['showdelay']) : 100;
             self::$tippyGlobalOptions['hidespeed'] = isset($_POST['hidespeed']) ? intval($_POST['hidespeed']) : 300;
             self::$tippyGlobalOptions['showheader'] = isset($_POST['showheader']) ? true : false;
+            self::$tippyGlobalOptions['calcpos'] = sanitize_text_field($_POST['calcpos']);
 
             self::saveOptions();
 

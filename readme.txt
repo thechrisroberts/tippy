@@ -4,7 +4,7 @@ Donate link: http://croberts.me/
 Tags: tooltip, popup
 Requires at least: 2.5
 Tested up to: 3.6
-Stable tag: 6.0.5
+Stable tag: 6.0.6
 License: MIT
 License URI: https://github.com/jquery/jquery-color/blob/2.1.2/MIT-LICENSE.txt
 
@@ -71,8 +71,12 @@ Note that even though some of the attributes have changed from older versions, t
 * headerhref: If headerhref is set, the tooltip header text will be a link pointing to this url.
 * showclose (true/false): Whether or not the tooltip have a close link. Usefor for mobile devices or when autoclose is false.
 * closetext ('close'): The text to display for the close link.
+* calcpos ('parent/document'): Calculate the tooltip link position relative to its parent or to the whole document.
 
 == Changelog ==
+
+= 6.0.6 =
+* Added a new position option in the dashboard
 
 = 6.0.5 =
 * Updated the position calculation

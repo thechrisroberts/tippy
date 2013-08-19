@@ -172,16 +172,6 @@ if (! function_exists('tippy_options_subpanel')) {
 					</label>
 			</div>
 
-			<div class="tippyHeader"><span>Tooltip Container</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" position="link" delay="900" offsetx="0" offsety="10" width="400"]By default, Tippy is located as a child of the body element. If you put a CSS selector here, Tippy will be moved inside that element. Might be useful if you switch position to absolute and set the new container to position: relative since Tippy\'s position will be determined by that element.[/tippy]'); ?>)</div>
-			<div class="tippyOptions">
-				<div style="display: inline-block; width: 100px;">
-					<label for="tippy_tipContainer">
-						Tippy container: 
-					</label>
-				</div>
-				<input id="tippy_tipContainer" name="tipContainer" size="10" type="text" value="<?php echo Tippy::getOption('tipContainer'); ?>" /> Leave empty for default
-			</div>
-			
 			<div class="tippyHeader"><span>Tooltip Offset</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" position="link" delay="900" offsetx="0" offsety="10" width="400"]Specify X/Y offsets if you want to nudge the tooltip around - make it display farther away from its trigger position. Give it negative values to move it up or left, positive values for right or down.[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
 				<div style="display: inline-block; width: 100px;">
@@ -217,6 +207,29 @@ if (! function_exists('tippy_options_subpanel')) {
 				<input id="tippy_dragHeader" name="dragHeader" type="checkbox" value="true" <?php if (Tippy::getOption('dragHeader') == "true") echo "checked" ?> /> 
 					<label for="tippy_dragHeader">
 						Only drag from the header
+					</label>
+			</div>
+			
+			<div class="tippyHeader"><span>Tooltip Container</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" position="link" delay="900" offsetx="0" offsety="10" width="400"]By default, Tippy is located as a child of the body element. If you put a CSS selector here, Tippy will be moved inside that element. Might be useful if you switch position to absolute and set the new container to position: relative since Tippy\'s position will be determined by that element.[/tippy]'); ?>)</div>
+			<div class="tippyOptions">
+				<div style="display: inline-block; width: 100px;">
+					<label for="tippy_tipContainer">
+						Tippy container: 
+					</label>
+				</div>
+				<input id="tippy_tipContainer" name="tipContainer" size="10" type="text" value="<?php echo Tippy::getOption('tipContainer'); ?>" /> Leave empty for default
+			</div>
+			
+			<div class="tippyHeader"><span>Calculate Position</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" position="link" delay="900" offsetx="0" offsety="10" width="400"]This only has an effect when position is calculated relative to the Tippy link. By default, position of the Tippy link is calculated relative to its parent. In some situations, (when changing container or doing other more advanced positioning options) you may want to get the link position relative to the document.[/tippy]'); ?>)</div>
+			<div class="tippyOptions">
+				<input id="tippy_calcpos_parent" name="calcpos" type="radio" value="parent" <?php if (Tippy::getOption('calcpos') == "parent") echo "checked" ?> />
+					<label for="tippy_calcpos_parent">
+						Relative to the parent
+					</label><br />
+				
+				<input id="tippy_calcpos_document" name="calcpos" type="radio" value="document" <?php if (Tippy::getOption('calcpos') == "document") echo "checked" ?> />
+					<label for="tippy_calcpos_document">
+						Relative to the document
 					</label>
 			</div>
 		</div>

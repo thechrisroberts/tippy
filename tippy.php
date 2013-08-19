@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 6.0.6
+Version: 6.0.7
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -452,11 +452,17 @@ class Tippy {
         self::addAttribute('anchor', '#'. $tippyId .'_anchor', $tippyId);
 
         // Create the div with the text in place
-        self::addContent($text, $tippyId);
+        $tooltipContent = self::addContent($text, $tippyId);
         
         self::$countTips++;
         
-        return '<a id="'. $tippyId .'_anchor"></a>';
+        $returnTip = '<a id="'. $tippyId .'_anchor"></a>';
+        
+        if (!in_the_loop()) {
+            $returnTip .= ' '. $tooltipContent;
+        }
+        
+        return $returnTip;
     }
 
     private static function addAttribute($attributeName, $attributeValue, $contentId)
@@ -476,6 +482,8 @@ class Tippy {
         $tooltipDiv = '<div class="tippy" '. $tooltipAttributes .'>'. do_shortcode($contentText) .'</div>';
 
         self::$tippyContent[$contentId] = $tooltipDiv;
+        
+        return $tooltipDiv;
     }
 
     public static function insert_tippy_content($content)

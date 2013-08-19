@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 6.0.3
+Version: 6.0.4
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */

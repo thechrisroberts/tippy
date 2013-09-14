@@ -76,9 +76,9 @@
 
     width: 420px;
     max-height: 275px;
-    overflow: auto;
 
     border-radius: 0 0 5px 5px;
+    position: relative;
 }
 
 .tippy_body.tippy_noheader {

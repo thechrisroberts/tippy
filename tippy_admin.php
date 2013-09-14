@@ -99,7 +99,7 @@ if (! function_exists('tippy_options_subpanel')) {
 
 			<div class="tippyHeader"><span>Close Link</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" position="link" delay="900" offsetx="0" offsety="10" width="400"]Do you want to display a Close link so visitors can manually close the tooltip? If so, what should the Close link say?[/tippy]'); ?>)</div>
 			<div class="tippyOptions">
-				<input id="tippy_showClose" name="showClose" type="checkbox" value="true" <?php if (Tippy::getOption('showClose') == 'true') echo "checked" ?> /> 
+				<input id="tippy_showClose" name="showClose" type="checkbox" value="true" <?php if (Tippy::getOption('showClose') == true) echo "checked" ?> /> 
 					<label for="tippy_showClose">
 						Show close link on tooltips
 					</label><br /><br />
@@ -108,6 +108,14 @@ if (! function_exists('tippy_options_subpanel')) {
 					Text to display for the Close link
 				</label>
 				<input id="tippy_closeLinkText" name="closeLinkText" size="15" type="text" value="<?php echo Tippy::getOption('closeLinkText'); ?>" />
+			</div>
+
+			<div class="tippyHeader"><span>Autoload Content</span> (<?php echo do_shortcode('[tippy title="info" header="off" autoclose="true" position="link" delay="900" offsetx="0" offsety="10" width="400"]Should tooltip content automatically load with the page? Typically this is desirable, but if you have something like audio set to autoplay when the tooltip opens, you might want to turn off autoload.[/tippy]'); ?>)</div>
+			<div class="tippyOptions">
+				<input id="tippy_autoload" name="htmlentities" type="checkbox" value="false" <?php if (Tippy::getOption('htmlentities') == false) echo "checked" ?> /> 
+					<label for="tippy_autoload">
+						Autoload Content
+					</label>
 			</div>
 		</div><!-- .tippyOptionSection -->
 

@@ -1,6 +1,6 @@
 /*
  * jQuery Tippy
- * Version 1.2.5
+ * Version 1.3.0
  * By Chris Roberts, chris@dailycross.net
  * http://croberts.me/
  *
@@ -243,8 +243,10 @@
 				.addClass('domTip_tipBody')
 				.appendTo(tipBox);
 			
-			// Move body content
-			$('#' + tipId).appendTo(tipBody).show();
+			if (tippy_state[tipId].options.htmlentities == false) {
+				// Move body content
+				$('#' + tipId).appendTo(tipBody).show();
+			}
 
 			if (tippy_state[tipId].options.height != false) {
 				tipBody.css("height", tippy_state[tipId].options.height + "px");
@@ -437,7 +439,6 @@
 
 			// Check on a swapimg/swaptitle to use if img/title is set
 			if (typeof tippy_state[tipId].options.swapimg != 'undefined' && typeof tippy_state[tipId].options.img != 'undefined') {
-				
 				// If we have a swapimg, just fade it in.
 				tippy_state[tipId].swapimg.fadeIn();
 			} else if (typeof tippy_state[tipId].options.swaptitle != 'undefined' && typeof tippy_state[tipId].options.title != 'undefined') {
@@ -446,6 +447,12 @@
 
 			if (!tippy_state[tipId].options.multitip && tippy_showing) {
 				doHideTooltip(tippy_showing);
+			}
+
+			// See if we need to decode and pull in content
+			if (tippy_state[tipId].options.htmlentities == true) {
+				var convertMarkup = $("<div/>").html($('#' + tipId).html()).text();
+				$('.tippy_body', tippy_state[tipId].tipBox).html(convertMarkup).show();
 			}
 
 			if (instashow) {
@@ -485,7 +492,12 @@
 				tippy_state[tipId].link.html(tippy_state[tipId].options.title);
 			}
 
-			tippy_state[tipId].tipBox.fadeOut(tippy_state[tipId].options.hidespeed);
+			tippy_state[tipId].tipBox.fadeOut(tippy_state[tipId].options.hidespeed, function() {
+				// See if we need to clear content
+				if (tippy_state[tipId].options.htmlentities == true) {
+					$('.tippy_body', tippy_state[tipId].tipBox).html('');
+				}
+			});
 		}
 
 		// If the user mouses over the tooltip, make sure we don't hide it. The tooltip
@@ -519,6 +531,7 @@
 		draggable: false, // Should visitors be able to drag the tooltip around? (requires jQuery UI)
 		dragheader: true, // If dragging is enabled should the visitor only be able to drag from the header? If false, user can move the tooltip from any part.
 		autoshow: false, // Should tooltips automatically be displayed when the page is loaded?
-		calcpos: 'parent' // Should the tooltip position be calculated relative to the parent or to the document?
+		calcpos: 'parent', // Should the tooltip position be calculated relative to the parent or to the document?
+		htmlentities: false // If false, Tippy assumes the tooltip content is straight html. If true, assumes it is encoded as entities and needs to be decoded.
 	}
 }(jQuery));

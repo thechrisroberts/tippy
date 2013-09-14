@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 6.0.7
+Version: 6.1.0
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -48,7 +48,8 @@ class Tippy {
                     'showdelay' => 100,
                     'hidespeed' => 200,
                     'showheader' => true,
-                    'calcpos' => 'parent');
+                    'calcpos' => 'parent',
+                    'htmlentities' => false);
 
     // List all options possible for Tippy. Used to verify valid attributes
     // in the shortcode.
@@ -89,7 +90,8 @@ class Tippy {
                     'class',
                     'id',
                     'name',
-                    'calcpos');
+                    'calcpos',
+                    'htmlentities');
     
     // Various helper properties
     private static $optionsLoaded = false;
@@ -280,62 +282,68 @@ class Tippy {
             $setOptions .= ', autoclose: false';
         }
 
-        if (Tippy::getOption('linkWindow') == "new") {
+        if (self::getOption('linkWindow') == "new") {
             $setOptions .= ', target: "_blank"';
         }
         
-        if (Tippy::getOption('showTitle')) {
+        if (self::getOption('showTitle')) {
             $setOptions .= ', showtitle: true';
         } else {
             $setOptions .= ', showtitle: false';
         }
         
-        if (Tippy::getOption('openTip') == "hover") {
+        if (self::getOption('openTip') == "hover") {
             $setOptions .= ', hoverpopup: true';
         } else {
             $setOptions .= ', hoverpopup: false';
         }
         
-        if (Tippy::getOption('dragTips')) {
+        if (self::getOption('dragTips')) {
             $setOptions .= ', draggable: true';
         } else {
             $setOptions .= ', draggable: false';
         }
         
-        if (Tippy::getOption('dragHeader')) {
+        if (self::getOption('dragHeader')) {
             $setOptions .= ', dragheader: true';
         } else {
             $setOptions .= ', dragheader: false';
         }
         
-        if (Tippy::getOption('multitip')) {
+        if (self::getOption('multitip')) {
             $setOptions .= ', multitip: true';
         } else {
             $setOptions .= ', multitip: false';
         }
         
-        if (Tippy::getOption('autoshow')) {
+        if (self::getOption('autoshow')) {
             $setOptions .= ', autoshow: true';
         } else {
             $setOptions .= ', autoshow: false';
         }
         
         
-        if (Tippy::getOption('showheader')) {
+        if (self::getOption('showheader')) {
             $setOptions .= ', showheader: true';
         } else {
             $setOptions .= ', showheader: false';
         }
         
-        if (Tippy::getOption('showClose')) {
+        if (self::getOption('showClose')) {
             $setOptions .= ', showclose: true';
         } else {
             $setOptions .= ', showclose: false';
         }
 
+        if (self::getOption('htmlentities')) {
+            $setOptions .= ', htmlentities: true';
+        } else {
+            $setOptions .= ', htmlentities: false';
+        }
+
         echo '
             <script type="text/javascript">
-                jQuery(\'document\').ready(function() {
+                jQuery(document).ready(function() {
                     jQuery(\'.tippy\').tippy({ '. $setOptions .' });
                 });
             </script>
@@ -381,6 +389,7 @@ class Tippy {
             self::$tippyGlobalOptions['sticky'] = ($_POST['sticky'] == "true") ? true : false;
             self::$tippyGlobalOptions['showTitle'] = isset($_POST['showTitle']) ? true : false;
             self::$tippyGlobalOptions['showClose'] = isset($_POST['showClose']) ? true : false;
+            self::$tippyGlobalOptions['htmlentities'] = isset($_POST['htmlentities']) ? false : true;
             self::$tippyGlobalOptions['closeLinkText'] = isset($_POST['closeLinkText']) ? sanitize_text_field($_POST['closeLinkText']) : 'X';
             self::$tippyGlobalOptions['delay'] = isset($_POST['delay']) ? intval($_POST['delay']) : 900;
             self::$tippyGlobalOptions['fadeRate'] = isset($_POST['faderate']) ? intval($_POST['faderate']) : 300;
@@ -440,6 +449,11 @@ class Tippy {
             unset($attributes['text']);
         }
 
+        // See if we are converting to htmlentities
+        if ((isset($attributes['htmlentities']) && $attributes['htmlentities'] == "true") || (!isset($attributes['htmlentities']) && self::getOption('htmlentities'))) {
+            $text = htmlentities($text);
+        }
+
         // Loop through $attributes and make sure they are in self::tippyOptionNames
         // then add them to our data set
         foreach ($attributes as $attName => $attValue) {
@@ -452,13 +466,19 @@ class Tippy {
         self::addAttribute('anchor', '#'. $tippyId .'_anchor', $tippyId);
 
         // Create the div with the text in place
-        $tooltipContent = self::addContent($text, $tippyId);
+        if (!in_the_loop() || (isset($attributes['subtip']) && $attributes['subtip'] == true)) {
+            $storeContent = false;
+        } else {
+            $storeContent = true;
+        }
+
+        $tooltipContent = self::addContent($text, $tippyId, $storeContent);
         
         self::$countTips++;
         
         $returnTip = '<a id="'. $tippyId .'_anchor"></a>';
         
-        if (!in_the_loop()) {
+        if (!$storeContent) {
             $returnTip .= ' '. $tooltipContent;
         }
         
@@ -470,7 +490,7 @@ class Tippy {
         self::$tippyAttributes[$contentId][$attributeName] = $attributeValue;
     }
 
-    private static function addContent($contentText, $contentId)
+    private static function addContent($contentText, $contentId, $storeContent = true)
     {
         // Put the attributes together
         $tooltipAttributes = '';
@@ -479,11 +499,46 @@ class Tippy {
             $tooltipAttributes .= 'data-'. $attributeName .'="'. $attributeValue .'" ';
         }
 
-        $tooltipDiv = '<div class="tippy" '. $tooltipAttributes .'>'. do_shortcode($contentText) .'</div>';
+        // Balance tags
+        $contentText = force_balance_tags($contentText);
 
-        self::$tippyContent[$contentId] = $tooltipDiv;
+        // Check for nested tooltips
+        $contentText = self::getNested($contentText);
+
+        // Process shortcodes
+        $contentText = do_shortcode($contentText);
+
+        $tooltipDiv = '<div class="tippy" '. $tooltipAttributes .'>'. $contentText .'</div>';
+
+        if ($storeContent) {
+            self::$tippyContent[$contentId] = $tooltipDiv;
+        }
         
         return $tooltipDiv;
+    }
+
+    // Looks inside a tooltip for any nested tooltips. Because of the tag matching,
+    // the ShortCode API is deficient and we need our own approach.
+    private static function getNested($contentText)
+    {
+        // Look for subtippy matches, including those with numeric suffixes.
+        preg_match_all('/\[subtippy([1-9])?([^\]]+)?\](.*)(?!\[subtippy)\[\/subtippy\1?\]/', $contentText, $matchNested);
+
+        if (!empty($matchNested[0])) {
+            for ($i = 0 ; $i < sizeof($matchNested[0]) ; $i++) {
+                $subTag = $matchNested[0][$i];
+                $subAttributes = shortcode_parse_atts(trim($matchNested[2][$i]));
+                
+                // Flag this so other parts of the script know we're dealing with a nested tooltip
+                $subAttributes['subtip'] = true;
+                $subContent = trim($matchNested[3][$i]);
+
+                $replaceText = self::getLink($subAttributes, $subContent);
+                $contentText = str_replace($subTag, $replaceText, $contentText);
+            }
+        }
+
+        return $contentText;
     }
 
     public static function insert_tippy_content($content)

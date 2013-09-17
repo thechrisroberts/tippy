@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 6.1.0
+Version: 6.1.1
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -91,7 +91,9 @@ class Tippy {
                     'id',
                     'name',
                     'calcpos',
-                    'htmlentities');
+                    'htmlentities',
+                    'hasnested',
+                    'subtip');
     
     // Various helper properties
     private static $optionsLoaded = false;
@@ -449,11 +451,6 @@ class Tippy {
             unset($attributes['text']);
         }
 
-        // See if we are converting to htmlentities
-        if ((isset($attributes['htmlentities']) && $attributes['htmlentities'] == "true") || (!isset($attributes['htmlentities']) && self::getOption('htmlentities'))) {
-            $text = htmlentities($text);
-        }
-
         // Loop through $attributes and make sure they are in self::tippyOptionNames
         // then add them to our data set
         foreach ($attributes as $attName => $attValue) {
@@ -495,18 +492,24 @@ class Tippy {
         // Put the attributes together
         $tooltipAttributes = '';
         
-        foreach (self::$tippyAttributes[$contentId] as $attributeName => $attributeValue) {
-            $tooltipAttributes .= 'data-'. $attributeName .'="'. $attributeValue .'" ';
-        }
-
         // Balance tags
         $contentText = force_balance_tags($contentText);
 
         // Check for nested tooltips
-        $contentText = self::getNested($contentText);
+        $contentText = self::getNested($contentText, $contentId);
 
         // Process shortcodes
         $contentText = do_shortcode($contentText);
+
+        // See if we are converting to htmlentities
+        if ((isset(self::$tippyAttributes[$contentId]['htmlentities']) && self::$tippyAttributes[$contentId]['htmlentities'] == "true") || (!isset(self::$tippyAttributes[$contentId]['htmlentities']) && self::getOption('htmlentities'))) {
+            $contentText = htmlentities($contentText);
+        }
+
+        // Set up attributes
+        foreach (self::$tippyAttributes[$contentId] as $attributeName => $attributeValue) {
+            $tooltipAttributes .= 'data-'. $attributeName .'="'. $attributeValue .'" ';
+        }
 
         $tooltipDiv = '<div class="tippy" '. $tooltipAttributes .'>'. $contentText .'</div>';
 
@@ -519,13 +522,16 @@ class Tippy {
 
     // Looks inside a tooltip for any nested tooltips. Because of the tag matching,
     // the ShortCode API is deficient and we need our own approach.
-    private static function getNested($contentText)
+    private static function getNested($contentText, $contentId)
     {
         // Look for subtippy matches, including those with numeric suffixes.
         preg_match_all('/\[subtippy([1-9])?([^\]]+)?\](.*)(?!\[subtippy)\[\/subtippy\1?\]/', $contentText, $matchNested);
 
         if (!empty($matchNested[0])) {
             for ($i = 0 ; $i < sizeof($matchNested[0]) ; $i++) {
+                // Flag that we have a nested item
+                self::addAttribute('hasnested', true, $contentId);
+
                 $subTag = $matchNested[0][$i];
                 $subAttributes = shortcode_parse_atts(trim($matchNested[2][$i]));
                 

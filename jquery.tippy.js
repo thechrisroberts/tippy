@@ -248,6 +248,10 @@
 				$('#' + tipId).appendTo(tipBody).show();
 			}
 
+			if (tippy_state[tipId].options.hasnested == true) {
+				tipBody.css('overflow', 'visible');
+			}
+
 			if (tippy_state[tipId].options.height != false) {
 				tipBody.css("height", tippy_state[tipId].options.height + "px");
 				tipBody.css("min-height", tippy_state[tipId].options.height + "px");
@@ -532,6 +536,7 @@
 		dragheader: true, // If dragging is enabled should the visitor only be able to drag from the header? If false, user can move the tooltip from any part.
 		autoshow: false, // Should tooltips automatically be displayed when the page is loaded?
 		calcpos: 'parent', // Should the tooltip position be calculated relative to the parent or to the document?
-		htmlentities: false // If false, Tippy assumes the tooltip content is straight html. If true, assumes it is encoded as entities and needs to be decoded.
+		htmlentities: false, // If false, Tippy assumes the tooltip content is straight html. If true, assumes it is encoded as entities and needs to be decoded.
+		hasnested: false // Whether or not this tooltip has a nested tooltip
 	}
 }(jQuery));

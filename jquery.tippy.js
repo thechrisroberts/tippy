@@ -1,6 +1,6 @@
 /*
  * jQuery Tippy
- * Version 1.3.0
+ * Version 1.3.1
  * By Chris Roberts, chris@dailycross.net
  * http://croberts.me/
  *
@@ -93,6 +93,8 @@
 			}
 
 			if (typeof tippy_state[tipId].options.img != 'undefined') {
+				tippyLink.css('display', 'inline-block').css('position', 'relative');
+
 				var tippyImg = $('<img />');
 				tippyImg.attr('src', tippy_state[tipId].options.img);
 
@@ -102,8 +104,9 @@
 
 				tippyLink.append(tippyImg);
 				tippy_state[tipId].img = tippyImg;
+				tippy_state[tipId].imgsrc = tippy_state[tipId].options.img;
 
-				// See if we have a swap image, go ahead and load it
+				// See if we have a swap image, go ahead and set it
 				if (typeof tippy_state[tipId].options.swapimg != 'undefined') {
 					var tippySwapImg = $('<img />')
 						.attr('src', tippy_state[tipId].options.swapimg)
@@ -116,6 +119,8 @@
 
 					tippyLink.append(tippySwapImg);
 					tippy_state[tipId].swapimg = tippySwapImg;
+
+					// tippy_state[tipId].swapimgsrc = tippy_state[tipId].options.swapimg;
 				}
 			} else if (typeof tippy_state[tipId].options.title != 'undefined') {
 				tippyLink.html(tippy_state[tipId].options.title);
@@ -174,7 +179,7 @@
 				.addClass('domTip_Tip')
 				.attr('id', tipId + '_box')
 				.mouseover(function() { freezeTooltip(tipId); })
-				.click(function() { $(this).css('z-index', topTipIndex); topTipIndex++; console.log(topTipIndex); });
+				.click(function() { $(this).css('z-index', topTipIndex); topTipIndex++; });
 			
 			tippy_state[tipId].tipBox = tipBox;
 
@@ -443,9 +448,15 @@
 
 			// Check on a swapimg/swaptitle to use if img/title is set
 			if (typeof tippy_state[tipId].options.swapimg != 'undefined' && typeof tippy_state[tipId].options.img != 'undefined') {
-				// If we have a swapimg, just fade it in.
-				tippy_state[tipId].swapimg.fadeIn();
+				// Fade out the primary image but don't set it display: none; This approach preserves
+				// the image size for the swapimg.
+				tippy_state[tipId].img.animate({ opacity: 0 }, 500);
+				tippy_state[tipId].swapimg.fadeIn(500);
 			} else if (typeof tippy_state[tipId].options.swaptitle != 'undefined' && typeof tippy_state[tipId].options.title != 'undefined') {
+				tippy_state[tipId].link.html(tippy_state[tipId].options.swaptitle);
+			}
+
+			if (typeof tippy_state[tipId].options.swaptitle != 'undefined' && typeof tippy_state[tipId].options.title != 'undefined') {
 				tippy_state[tipId].link.html(tippy_state[tipId].options.swaptitle);
 			}
 
@@ -466,6 +477,29 @@
 			}
 
 			tippy_showing = tipId;
+
+			// Load the MediaElement player on any media elements in the tooltip
+			jQuery('video,audio', tippy_state[tipId].tipBox).mediaelementplayer().load();
+		}
+
+		function showSwapImg(tipId, event)
+		{
+			// Check on a swapimg/swaptitle to use if img/title is set
+			if (typeof tippy_state[tipId].options.swapimg != 'undefined' && typeof tippy_state[tipId].options.img != 'undefined') {
+				// Fade out the primary image but don't set it display: none; This approach preserves
+				// the image size for the swapimg.
+				tippy_state[tipId].img.animate({ opacity: 0 }, 500);
+				tippy_state[tipId].swapimg.fadeIn(500);
+			}
+		}
+
+		function hideSwapImg(tipId)
+		{
+			// Check on a swaptitle to use if title is set
+			if (typeof tippy_state[tipId].options.swapimg != 'undefined' && typeof tippy_state[tipId].options.img != 'undefined') {
+				tippy_state[tipId].img.animate({ opacity: 1 }, 500);
+				tippy_state[tipId].swapimg.fadeOut(500);
+			}
 		}
 
 		// When the visitor mouses away from the link or the tooltip, start a timer that
@@ -488,11 +522,9 @@
 			tippy_state[tipId].state = 'hidden';
 			clearTimeout(tippy_state[tipId].timer);
 
-			// Check on a swaptitle to use if title is set
-			if (typeof tippy_state[tipId].options.swapimg != 'undefined' && typeof tippy_state[tipId].options.img != 'undefined') {
-				// If we have a swapimg, just fade it out.
-				tippy_state[tipId].swapimg.fadeOut();
-			} else if (typeof tippy_state[tipId].options.swaptitle != 'undefined' && typeof tippy_state[tipId].options.title != 'undefined') {
+			hideSwapImg(tipId);
+
+			if (typeof tippy_state[tipId].options.swaptitle != 'undefined' && typeof tippy_state[tipId].options.title != 'undefined') {
 				tippy_state[tipId].link.html(tippy_state[tipId].options.title);
 			}
 

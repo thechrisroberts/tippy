@@ -4,7 +4,7 @@ Donate link: http://croberts.me/
 Tags: tooltip, popup
 Requires at least: 2.5
 Tested up to: 3.6.1
-Stable tag: 6.1.1
+Stable tag: 6.1.2
 License: MIT
 License URI: https://github.com/jquery/jquery-color/blob/2.1.2/MIT-LICENSE.txt
 
@@ -74,6 +74,11 @@ Note that even though some of the attributes have changed from older versions, t
 * calcpos ('parent/document'): Calculate the tooltip link position relative to its parent or to the whole document.
 
 == Changelog ==
+
+= 6.1.2 =
+* Fixed an issue with subtips having line breaks
+* Change the method used for swapping images; preserves size of the initial image and prevents any jumps
+* Tells mediaelement.js to load after tooltips are displayed
 
 = 6.1.1 =
 * Fixes a text overflow issue

@@ -14,15 +14,13 @@
     font-weight: normal;
     border-bottom: 1px dotted;
     cursor: pointer;
-    display: inline-block;
-    position: relative;
 }
 
 .tippy_link img {
     z-index: 1;
 }
 
-.tippy_swap {
+.tippy_link img.tippy_swap {
     position: absolute;
     top: 0;
     left: 0;

@@ -3,7 +3,7 @@
 Plugin Name: Tippy
 Plugin URI: http://croberts.me/tippy/
 Description: Simple plugin to display tooltips within your WordPress blog.
-Version: 6.1.2
+Version: 6.1.3
 Author: Chris Roberts
 Author URI: http://croberts.me/
 */
@@ -526,7 +526,7 @@ class Tippy {
     private static function getNested($contentText, $contentId)
     {
         // Look for subtippy matches, including those with numeric suffixes.
-        preg_match_all('/\[subtippy([0-9])?([^\]]+)?\](.*?)(?!\[subtippy)\[\/subtippy\1?\]/s', $contentText, $matchNested);
+        preg_match_all('/\[subtippy([0-9]*)?([^\]]+)?\](.*?)(?!\[subtippy)\[\/subtippy\1?\]/s', $contentText, $matchNested);
 
         if (!empty($matchNested[0])) {
             for ($i = 0 ; $i < sizeof($matchNested[0]) ; $i++) {

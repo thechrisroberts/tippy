@@ -1,7 +1,7 @@
 /*
  * jQuery Tippy
- * Version 1.3.1
- * By Chris Roberts, chris@dailycross.net
+ * Version 1.4.0
+ * By Chris Roberts, chris@croberts.me
  * http://croberts.me/
  *
  */
@@ -34,7 +34,7 @@
 	$.fn.tippy = function(options) {
 		// Track data for each of our tooltips
 		var tippy_state = {};
-
+		
 		// Hold global position data
 		var tippy_positions = {};
 
@@ -78,10 +78,10 @@
 			
 			tippyLink.addClass('tippy_link')
 				.attr('id', tipId + '_link');
-
+			
 			// Using [''] for class variable since .class breaks in ie8
 			if (typeof tippy_state[tipId].options['class'] != 'undefined') {
-				tippyLink.addClass(tippy_state[tipId].options['class'])
+				tippyLink.addClass(tippy_state[tipId].options['class']);
 			}
 			
 			if (typeof tippy_state[tipId].options.name != 'undefined') {
@@ -141,8 +141,16 @@
 
 			if (tippy_state[tipId].options.hoverpopup) {
 				tippyLink.mouseover(function(event) { showTooltip(tipId, event); });
+				
+				if (tippy_state[tipId].options.alttrigger != 'undefined') {
+					$(tippy_state[tipId].options.alttrigger).mouseover(function(event) { showTooltip(tipId, event); });
+				}
 			} else {
 				tippyLink.click(function(event) { showTooltip(tipId, event); });
+				
+				if (tippy_state[tipId].options.alttrigger != 'undefined') {
+					$(tippy_state[tipId].options.alttrigger).click(function(event) { showTooltip(tipId, event); });
+				}
 			}
 
 			if (tippy_state[tipId].options.autoclose) {
@@ -478,8 +486,10 @@
 
 			tippy_showing = tipId;
 
-			// Load the MediaElement player on any media elements in the tooltip
-			jQuery('video,audio', tippy_state[tipId].tipBox).mediaelementplayer().load();
+			if (tippy_state[tipId].tipBox.mediaelementplayer) {
+				// Load the MediaElement player on any media elements in the tooltip
+				jQuery('video,audio', tippy_state[tipId].tipBox).mediaelementplayer().load();
+			}
 		}
 
 		function showSwapImg(tipId, event)
@@ -543,6 +553,27 @@
 			clearTimeout(tippy_state[tipId].timer);
 			tippy_state[tipId].tipBox.stop();
 			tippy_state[tipId].tipBox.css("opacity", 100);
+		}
+	
+		function getTipId(manualId)
+		{
+			console.log("Finding...");
+			if (tippy_ids[manualId] != "undefined") {
+				return tippy_ids[manualId];
+			} else {
+				return false;
+			}
+		}
+		
+		function triggerTippy(manualId, event)
+		{
+			console.log("Enter...");
+			tipId = getTipId(manualId);
+			console.log("Got " + tipId);
+			
+			if (tipId) {
+				showTooltip(tipId, event);
+			}
 		}
 	};
 

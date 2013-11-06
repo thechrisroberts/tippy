@@ -4,7 +4,7 @@ Donate link: http://croberts.me/
 Tags: tooltip, popup
 Requires at least: 2.5
 Tested up to: 3.6.1
-Stable tag: 6.2.0
+Stable tag: 6.2.1
 License: MIT
 License URI: https://github.com/jquery/jquery-color/blob/2.1.2/MIT-LICENSE.txt
 
@@ -75,6 +75,9 @@ Note that even though some of the attributes have changed from older versions, t
 * alttrigger: Specify an element to use as additional triggers for the tooltip. Be sure to include . or # - ie: .triggerClass or #triggerId.
 
 == Changelog ==
+
+= 6.2.1 =
+* Fixed a glitch where mousing out of an alttrigger element wouldn't trigger hiding the tooltip
 
 = 6.2.0 =
 * Added the new alttrigger attribute to allow triggering the tooltip on custom links and buttons.

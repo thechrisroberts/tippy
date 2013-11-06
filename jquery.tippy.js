@@ -1,6 +1,6 @@
 /*
  * jQuery Tippy
- * Version 1.4.0
+ * Version 1.4.1
  * By Chris Roberts, chris@croberts.me
  * http://croberts.me/
  *
@@ -157,6 +157,12 @@
 				tippyLink.mouseout(function() {
 					hideTooltip(tipId);
 				});
+				
+				if (tippy_state[tipId].options.alttrigger != 'undefined') {
+					$(tippy_state[tipId].options.alttrigger).mouseout(function() {
+						hideTooltip(tipId);
+					});
+				}
 			}		 
 
 			if (typeof tippy_state[tipId].options.anchor == 'undefined') {
